@@ -1,18 +1,19 @@
-pytest-check
+pytest-check==2.6.2
 webdriver-manager==4.0.2
-selenium==4.39.0
+selenium==4.40.0
 python-dotenv
 pytest==9.0.2
 playwright==1.57.0
-faker==38.2.0
-pytest-playwright-visual-snapshot==0.2.4
+faker==40.1.2
+pytest-playwright-visual-snapshot==0.4.0
 pytest-repeat==0.9.4
 pytest-rerunfailures==16.1.0
 pytest-xdist == 3.8.0
 requests==2.32.5
+allure-pytest ==2.15.3
 
 # dev
-black==25.12.0
+black==26.1.0
 flake8==7.3.0
 isort==7.0.0
-pre-commit==4.5.0
+pre-commit==4.5.1

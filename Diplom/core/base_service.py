@@ -1,6 +1,7 @@
 import pytest
 import requests
-from Diplom.logger import logger
+
+from conftest import logger
 
 
 class BaseService:

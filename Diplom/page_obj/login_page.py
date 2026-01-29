@@ -80,3 +80,6 @@ class LoginPage(BasePage):
         self.EMPTY_ERROR.should_be_visible()
         self.EMPTY_ERROR.should_be_has_text(text)
         return self
+
+    def get_error_text(self):
+        return self.ERROR.get_text()

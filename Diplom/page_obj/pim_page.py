@@ -11,6 +11,7 @@ class PIMPage(BasePage):
         self.PIM_TITLE = BaseElement(
             driver, (By.CLASS_NAME, "oxd-topbar-header-breadcrumb")
         )
+        self.PAGE_TITLE = BaseElement(driver, (By.CLASS_NAME, "oxd-table-filter-header-title"))
         self.SEARCH_FIELD = BaseElement(
             driver, (By.CSS_SELECTOR, "input[placeholder='Search']")
         )
@@ -18,7 +19,7 @@ class PIMPage(BasePage):
             driver, (By.CLASS_NAME, "oxd-userdropdown-tab")
         )
         self.MENU_ADMIN = BaseElement(driver, (By.XPATH, "//span[text()='Admin']"))
-        self.MENU_BUZZ = BaseElement(driver, (By.XPATH, "//span[text()='Buzz']"))
+        self.MENU_PIM = BaseElement(driver, (By.XPATH, "//span[text()='PIM']"))
         self.EMPLOYEE_PANEL = BaseElement(driver, (By.CLASS_NAME, "oxd-table-filter-header-options"))
         self.EMPLOYEE_NAME_FIELD = BaseElement(driver, (By.XPATH, "//label[text()='Employee Name']/following::input[1]"))
         self.EMPLOYEE_ID_FIELD = BaseElement(driver, (By.XPATH, "//label[text()='Employee Id']/following::input[1]"))
@@ -80,8 +81,13 @@ class PIMPage(BasePage):
     def check_that_page_opened(self):
         self.LOGO.should_be_visible()
         self.PIM_TITLE.should_be_visible()
-        self.USER_DROPDOWN.should_be_visible()
-        self.MENU_ADMIN.should_be_visible()
+        self.INCLUDE_DROPDOWN.should_be_visible()
+        self.MENU_PIM.should_be_visible()
+        self.EDIT_BUTTONS.should_be_visible()
         self.SEARCH_FIELD.should_be_visible()
+        self.JOB_TITLE_OPTIONS.should_be_visible()
+        self.SEARCH_FIELD.should_be_visible()
+        self.PAGE_TITLE.should_be_visible()
 
         self.PIM_TITLE.should_be_has_text("PIM")
+        self.PAGE_TITLE.should_be_has_text("Employee Information")

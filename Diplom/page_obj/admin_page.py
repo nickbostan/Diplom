@@ -15,6 +15,7 @@ class AdminPage(BasePage):
         self.ADMIN_TITLE = BaseElement(
             driver, (By.CLASS_NAME, "oxd-topbar-header-breadcrumb-module")
         )
+        self.PAGE_TITLE = BaseElement(driver, (By.CLASS_NAME, "oxd-table-filter-header-title"))
         self.USER_DROPDOWN = BaseElement(
             driver, (By.CLASS_NAME, "oxd-userdropdown-tab")
         )
@@ -93,7 +94,6 @@ class AdminPage(BasePage):
         self.MORE = BaseElement(driver, (By.XPATH, "//span[text()='More ']"))
 
 
-
     def check_that_page_opened(self):
         self.LOGO.should_be_visible()
         self.ADMIN_TITLE.should_be_visible()
@@ -107,6 +107,8 @@ class AdminPage(BasePage):
         self.USER_MANAGEMENT.should_be_visible()
         self.QUALIFICATIONS.should_be_visible()
         self.MORE.should_be_visible()
+        self.PAGE_TITLE.should_be_visible()
 
         self.ADMIN_TITLE.should_be_has_text("Admin")
+        self.PAGE_TITLE.should_be_has_text("System Users")
 

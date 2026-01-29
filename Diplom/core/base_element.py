@@ -8,7 +8,7 @@ class BaseElement:
         self.wait = WebDriverWait(self.driver, 10)
         self.selector = selector
 
-    def get_element(self, timeout=5):
+    def get_element(self, timeout=10):
         return WebDriverWait(self.driver, timeout).until(
             EC.element_to_be_clickable(self.selector)
         )
@@ -38,6 +38,10 @@ class BaseElement:
     ):
         element = self.get_element()
         assert element.is_displayed()
+
+    def get_text(self):
+        element = self.get_element()
+        return element.text
 
     def should_be_not_visible(self, timeout=5):
         return WebDriverWait(self.driver, timeout).until_not(
