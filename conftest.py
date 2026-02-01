@@ -7,7 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def driver():
     opts = ChromeOptions()
     opts.headless = True

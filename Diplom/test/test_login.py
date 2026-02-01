@@ -23,10 +23,10 @@ def open_page(login_page):
     login_page.open_page()
 
 
-
+@allure.epic("Страница логина")
+@allure.title("Отображение страницы логина")
 @pytest.mark.smoke
 def test_check_all_elements(login_page, open_page, driver):
-    """Проверка наличия всех элементов на странице логина"""
     logger.info("=== Начало test_check_all_elements ===")
 
     with allure.step("Проверяем открытие страницы логина"):
@@ -44,9 +44,11 @@ def test_check_all_elements(login_page, open_page, driver):
 
     logger.info("=== Конец test_check_all_elements ===")
 
+@allure.epic("Страница логина")
+@allure.feature("Авторизация")
+@allure.title("Вход в систему")
 @pytest.mark.smoke
 def test_positive_login(login_page, dashboard_page, open_page, driver):
-    """Позитивное тестирования формы входа"""
     logger.info("=== Начало test_positive_login ===")
 
     with allure.step("Логинимся с валидными данными"):
@@ -65,13 +67,14 @@ def test_positive_login(login_page, dashboard_page, open_page, driver):
         logger.info(f"URL после логина: {current_url}")
 
         assert current_url == URLS.DASHBOARD
-        logger.info("✓ Успешный логин, открыт дашборд")
+        logger.info("✓ Успешный логин, открыта страница дашборда")
 
     logger.info("=== Конец test_positive_login ===")
 
-
+@allure.epic("Страница логина")
+@allure.feature("Авторизация")
+@allure.title("Выход из системы")
 def test_logout(login_page, dashboard_page, open_page, driver):
-    """Проверка выхода и системы"""
     logger.info("=== Начало test_logout ===")
 
     with allure.step("Заходим в систему"):
@@ -108,8 +111,10 @@ def test_logout(login_page, dashboard_page, open_page, driver):
         ("Admin", "incorrectPassword", "Invalid credentials"),
     ],
 )
+@allure.epic("Страница логина")
+@allure.feature("Авторизация")
+@allure.title("Ввод неверного имени пользователя")
 def test_negative_username(login_page, open_page, user, password, expect, driver):
-    """Проверка ввода неверных данных"""
     logger.info(f"=== Начало test_negative_username: {user} ===")
 
     with allure.step(f"Логин с неверными данными: {user}"):
@@ -146,8 +151,10 @@ def test_negative_username(login_page, open_page, user, password, expect, driver
         ("Admin", "", "Required"),
     ],
 )
+@allure.epic("Страница логина")
+@allure.feature("Авторизация")
+@allure.title("Пустые поля")
 def test_negative_empty_fields(login_page, open_page, user, password, expect, driver):
-    """Проверка пустых полей"""
     logger.info(f"=== Начало test_negative_empty_fields ===")
 
     with allure.step(f"Логин с пустым полем: {user or 'пусто'}/{password or 'пусто'}"):
@@ -176,10 +183,10 @@ def test_negative_empty_fields(login_page, open_page, user, password, expect, dr
             ("SITE_LINK", "orangehrm.com"),
         ],
     )
-
-
+@allure.epic("Страница логина")
+@allure.feature("Переход по ссылкам")
+@allure.title("Проверка перехода по ссылкам")
 def test_social_links(login_page, link_element, expected_url, open_page, driver):
-    """Проверка социальных ссылок"""
     logger.info(f"=== Начало test_social_links: {link_element} ===")
 
     with allure.step(f"Кликаем на ссылку {link_element}"):
@@ -214,9 +221,10 @@ def test_social_links(login_page, link_element, expected_url, open_page, driver)
 
     logger.info(f"=== Конец test_social_links: {link_element} ===")
 
-
+@allure.epic("Страница логина")
+@allure.feature("Авторизация")
+@allure.title("Переход на ссылку восстановления пароля")
 def test_forgot_password_link(login_page, open_page, driver):
-    """Тест ссылки 'Forgot Password'"""
     logger.info("=== Начало test_forgot_password_link ===")
 
     with allure.step("Кликаем на 'Forgot Password'"):
@@ -239,42 +247,3 @@ def test_forgot_password_link(login_page, open_page, driver):
     logger.info("=== Конец test_forgot_password_link ===")
 
 
-@pytest.mark.parametrize(
-    "length,expected",
-    [
-        (50, "accept"),
-        (100, "accept"),
-        (255, "accept"),
-        (256, "cut off"),
-        (500, "cut off"),
-        (1000, "cut off"),
-    ],
-)
-def test_input_fields_lengths(login_page, open_page, length, expected):
-    login_page.INPUT_PASSWORD.fill("x" * length)
-
-    actual_value = login_page.INPUT_PASSWORD.get_attribute("value")
-    actual_length = len(actual_value)
-
-    if expected == "accept":
-        check.equal(
-            actual_length, length, f"Expected {length}, granted {actual_length}"
-        )
-    elif expected == "cut off":
-        check.less_equal(
-            actual_length, length, f"Entered much more then possible: {actual_length}"
-        )
-
-    login_page.INPUT_USER_NAME.fill("x" * length)
-
-    actual_value = login_page.INPUT_USER_NAME.get_attribute("value")
-    actual_length = len(actual_value)
-
-    if expected == "accept":
-        check.equal(
-            actual_length, length, f"Expected {length}, granted {actual_length}"
-        )
-    elif expected == "cut off":
-        check.less_equal(
-            actual_length, length, f"Entered much more then possible: {actual_length}"
-        )

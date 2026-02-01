@@ -69,7 +69,7 @@ pytest -m smoke
 pytest -v
 
 # Запуск конкретного теста
-pytest tests/test_login.py::test_positive_login
+pytest Diplom/test/test_login.py::test_positive_login
 ```
 
 ## 🧪 Запуск тестов
@@ -83,6 +83,19 @@ pytest tests/test_login.py::test_positive_login
 | `test_logout` | Выход из системы |
 | `test_social_links` | Проверка социальных ссылок |
 
+
+## 🎯 API блок
+Интеграция API тестов для системы OrangeHRM с поддержкой основных CRUD операций.
+
+## 📊 Поддерживаемые операции
+
+| Метод | Эндпоинт | Описание |
+|-------|----------|----------|
+| POST | `/api/v2/pim/employees` | Создание сотрудника |
+| GET | `/api/v2/pim/employees` | Получение списка сотрудников |
+| GET | `/api/v2/pim/employees/{id}/personal-details` | Получение данных сотрудника |
+| PUT | `/api/v2/pim/employees/{id}/personal-details` | Обновление данных сотрудника |
+| DELETE | `/api/v2/pim/employees` | Удаление сотрудника(ов) |
 
 📊 Генерация отчетов
 Allure отчеты

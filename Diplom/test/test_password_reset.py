@@ -17,10 +17,10 @@ def password_page(driver):
 def open_page(password_page):
     password_page.open_page()
 
-
+@allure.epic("Страница восстановления пароля")
+@allure.title("Проверка отображения страницы восстановления пароля")
 @pytest.mark.smoke
 def test_check_all_elements(password_page, open_page, driver):
-    """Проверка элементов страницы восстановления пароля"""
     logger.info("=== Начало test_check_all_elements ===")
 
     with allure.step("Проверяем страницу"):
@@ -31,22 +31,23 @@ def test_check_all_elements(password_page, open_page, driver):
 
     logger.info("=== Конец test_check_all_elements ===")
 
-
+@allure.epic("Страница восстановления пароля")
+@allure.title("Отмена восстановления")
 def test_cancel(password_page, open_page, driver):
-    """Тестирование отмены """
     logger.info("=== Начало test_cancel ===")
 
     with allure.step("Нажимаем Cancel"):
         password_page.CANCEL_BUTTON.click()
         allure.attach(driver.get_screenshot_as_png(), name="cancel", attachment_type=allure.attachment_type.PNG)
         assert password_page.driver.current_url == URLS.LOGIN
-        logger.info("✓ Возврат на логин")
+        logger.info("✓ Возврат на страницу логина")
 
     logger.info("=== Конец test_cancel ===")
 
-
+@allure.epic("Страница восстановления пароля")
+@allure.feature("Сброс пароля")
+@allure.title("Сброс и восстановление пароля")
 def test_reset(password_page, open_page, driver):
-    """Тест успешного сброса пароля"""
     logger.info("=== Начало test_reset ===")
 
     with allure.step("Сбрасываем пароль"):
@@ -64,9 +65,10 @@ def test_reset(password_page, open_page, driver):
 
     logger.info("=== Конец test_reset ===")
 
-
+@allure.epic("Страница восстановления пароля")
+@allure.feature("Сброс пароля")
+@allure.title("Пустые поля")
 def test_negative_empty_fields(password_page, open_page, driver):
-    """Тестирование формы с пустым полем"""
     logger.info("=== Начало test_negative_empty_fields ===")
 
     with allure.step("Пустое поле"):
