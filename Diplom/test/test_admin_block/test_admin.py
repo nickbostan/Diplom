@@ -1,13 +1,13 @@
 import time
 
-import pytest
 import allure
-
+import pytest
 from faker import Faker
+
 from conftest import logger
-from Diplom.page_obj.admin_page import AdminPage
-from Diplom.page_obj.login_page import LoginPage
 from Diplom.page_obj.admin_block.admin_add_user import AdminAddPage
+from Diplom.page_obj.admin_block.admin_page import AdminPage
+from Diplom.page_obj.login_page import LoginPage
 from Diplom.urls import URLS
 
 
@@ -22,8 +22,8 @@ def admin_page(driver):
     login_page.open_page()
     login_page.login("Admin", "admin123")
 
-
     return AdminPage(driver)
+
 
 @pytest.fixture()
 def admin_add_page(driver):
@@ -44,13 +44,14 @@ def test_check_all_elements(admin_page, driver):
         allure.attach(
             driver.get_screenshot_as_png(),
             name="admin_page",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
         assert admin_page.driver.current_url == URLS.ADMIN
         logger.info("✓ Страница администратора открыта корректно")
 
     logger.info("=== Конец test_check_all_elements ===")
+
 
 @allure.epic("Страница администратора")
 @allure.title("Проверка главного фильтра dropdown")
@@ -65,7 +66,7 @@ def test_main_filter(admin_page, driver):
         allure.attach(
             driver.get_screenshot_as_png(),
             name="admin_page",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
         assert admin_page.driver.current_url == URLS.ADMIN
@@ -92,7 +93,7 @@ def test_admin_add_user_page(admin_add_page, admin_page, driver):
         allure.attach(
             driver.get_screenshot_as_png(),
             name="admin_add_page",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
         assert admin_add_page.driver.current_url == URLS.ADMIN_SAVE
@@ -105,7 +106,7 @@ def test_admin_add_user_page(admin_add_page, admin_page, driver):
         allure.attach(
             driver.get_screenshot_as_png(),
             name="admin_page",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
         assert admin_page.driver.current_url == URLS.ADMIN
@@ -134,7 +135,7 @@ def test_input_fields_valid_lengths(admin_page, admin_add_page, driver, length):
         allure.attach(
             driver.get_screenshot_as_png(),
             name=f"username_{length}",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
     with allure.step("Кликаем еще раз на поле ввода"):
@@ -148,7 +149,7 @@ def test_input_fields_valid_lengths(admin_page, admin_add_page, driver, length):
         allure.attach(
             driver.get_screenshot_as_png(),
             name="page",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
         assert error_not_visible, f"Ошибка валидации не должна отображаться"
@@ -176,7 +177,7 @@ def test_input_fields_valid(admin_page, admin_add_page, driver, password):
         allure.attach(
             driver.get_screenshot_as_png(),
             name=f"password_{len(password)}",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
     with allure.step("Активируем валидацию пароля"):
@@ -185,17 +186,21 @@ def test_input_fields_valid(admin_page, admin_add_page, driver, password):
 
     with allure.step("Проверяем отсутствие ошибок"):
         logger.info("Проверяем отсутствие ошибок слабого пароля ")
-        is_weak_error_not_visible = admin_add_page.ERROR_WEAK_PASS.should_be_not_visible()
+        is_weak_error_not_visible = (
+            admin_add_page.ERROR_WEAK_PASS.should_be_not_visible()
+        )
 
         logger.info("Проверяем отсутствие ошибок длины пароля")
-        is_length_error_not_visible = admin_add_page.ERROR_LENGTH_PASS.should_be_not_visible()
+        is_length_error_not_visible = (
+            admin_add_page.ERROR_LENGTH_PASS.should_be_not_visible()
+        )
 
         allure.attach(
             f"Длина пароля: {len(password)} символов\n"
             f"Ошибка слабого пароля: {not is_weak_error_not_visible}\n"
             f"Ошибка длины пароля: {not is_length_error_not_visible}",
             name="password_validation_result",
-            attachment_type=allure.attachment_type.TEXT
+            attachment_type=allure.attachment_type.TEXT,
         )
 
         assert is_weak_error_not_visible, "Ошибка слабого пароля не должна отображаться"
@@ -215,8 +220,12 @@ def test_input_fields_valid(admin_page, admin_add_page, driver, password):
         (41, "Should not exceed 40 characters"),
     ],
 )
-def test_input_username_fields_invalid_lengths(admin_page, admin_add_page, driver, expected, length):
-    logger.info(f"=== Начало test_input_username_fields_invalid_lengths (длина: {length}) ===")
+def test_input_username_fields_invalid_lengths(
+    admin_page, admin_add_page, driver, expected, length
+):
+    logger.info(
+        f"=== Начало test_input_username_fields_invalid_lengths (длина: {length}) ==="
+    )
 
     with allure.step("Открываем страницу добавления"):
         logger.info("Кликаем на меню Admin и на кнопку Add")
@@ -231,7 +240,7 @@ def test_input_username_fields_invalid_lengths(admin_page, admin_add_page, drive
         allure.attach(
             driver.get_screenshot_as_png(),
             name=f"invalid_username_{length}",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
     with allure.step("Активируем валидацию поля"):
@@ -245,13 +254,17 @@ def test_input_username_fields_invalid_lengths(admin_page, admin_add_page, drive
         allure.attach(
             driver.get_screenshot_as_png(),
             name="username_error",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
-        assert is_error_visible, f"Ожидалась ошибка: '{expected}' для username длиной {length} символов"
+        assert (
+            is_error_visible
+        ), f"Ожидалась ошибка: '{expected}' для username длиной {length} символов"
         logger.info("✓ Сообщение об ошибке отображается корректно")
 
-    logger.info(f"=== Конец test_input_username_fields_invalid_lengths (длина: {length}) ===")
+    logger.info(
+        f"=== Конец test_input_username_fields_invalid_lengths (длина: {length}) ==="
+    )
 
 
 @allure.epic("Страница администратора")
@@ -264,8 +277,12 @@ def test_input_username_fields_invalid_lengths(admin_page, admin_add_page, drive
         (65, "Should not exceed 64 characters"),
     ],
 )
-def test_input_password_fields_invalid_lengths(admin_page, admin_add_page, driver, expected, length):
-    logger.info(f"=== Начало test_input_password_fields_invalid_lengths (длина: {length}) ===")
+def test_input_password_fields_invalid_lengths(
+    admin_page, admin_add_page, driver, expected, length
+):
+    logger.info(
+        f"=== Начало test_input_password_fields_invalid_lengths (длина: {length}) ==="
+    )
 
     with allure.step("Открываем страницу добавления"):
         logger.info("Кликаем на меню Admin и на кнопку Add")
@@ -280,7 +297,7 @@ def test_input_password_fields_invalid_lengths(admin_page, admin_add_page, drive
         allure.attach(
             driver.get_screenshot_as_png(),
             name=f"invalid_password_{length}",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
     with allure.step("Активируем валидацию пароля"):
@@ -289,18 +306,24 @@ def test_input_password_fields_invalid_lengths(admin_page, admin_add_page, drive
 
     with allure.step("Проверяем сообщение об ошибке длины пароля"):
         logger.info(f"Ожидаемое сообщение об ошибке: '{expected}'")
-        is_error_visible = admin_add_page.check_that_length_password_error_is_visible(expected)
+        is_error_visible = admin_add_page.check_that_length_password_error_is_visible(
+            expected
+        )
 
         allure.attach(
             driver.get_screenshot_as_png(),
             name=f"password_length_error",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
-        assert is_error_visible, f"Ожидалась ошибка: '{expected}' для пароля длиной {length} символов"
+        assert (
+            is_error_visible
+        ), f"Ожидалась ошибка: '{expected}' для пароля длиной {length} символов"
         logger.info("✓ Сообщение об ошибке длины отображается корректно")
 
-    logger.info(f"=== Конец test_input_password_fields_invalid_lengths (длина: {length}) ===")
+    logger.info(
+        f"=== Конец test_input_password_fields_invalid_lengths (длина: {length}) ==="
+    )
 
 
 @allure.epic("Страница администратора")
@@ -313,8 +336,12 @@ def test_input_password_fields_invalid_lengths(admin_page, admin_add_page, drive
         ("d" * 8, "Your password must contain minimum 1 number"),
     ],
 )
-def test_input_password_fields_weakness(admin_page, admin_add_page, driver, expected, password):
-    logger.info(f"=== Начало test_input_password_fields_weakness (пароль: {password}) ===")
+def test_input_password_fields_weakness(
+    admin_page, admin_add_page, driver, expected, password
+):
+    logger.info(
+        f"=== Начало test_input_password_fields_weakness (пароль: {password}) ==="
+    )
 
     with allure.step("Открываем страницу добавления"):
         logger.info("Кликаем на меню Admin и на кнопку Add")
@@ -328,7 +355,7 @@ def test_input_password_fields_weakness(admin_page, admin_add_page, driver, expe
         allure.attach(
             driver.get_screenshot_as_png(),
             name=f"weak_password_entered_{password[:5]}",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
     with allure.step("Активируем валидацию пароля"):
@@ -337,18 +364,24 @@ def test_input_password_fields_weakness(admin_page, admin_add_page, driver, expe
 
     with allure.step("Проверяем сообщение об ошибке слабого пароля"):
         logger.info(f"Ожидаемое сообщение об ошибке: '{expected}'")
-        is_error_visible = admin_add_page.check_that_weak_password_error_is_visible(expected)
+        is_error_visible = admin_add_page.check_that_weak_password_error_is_visible(
+            expected
+        )
 
         allure.attach(
             driver.get_screenshot_as_png(),
             name=f"weak_password_error",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
-        assert is_error_visible, f"Ожидалась ошибка: '{expected}' для пароля '{password}'"
+        assert (
+            is_error_visible
+        ), f"Ожидалась ошибка: '{expected}' для пароля '{password}'"
         logger.info("✓ Сообщение об ошибке слабого пароля отображается корректно")
 
-    logger.info(f"=== Конец test_input_password_fields_weakness (пароль: {password}) ===")
+    logger.info(
+        f"=== Конец test_input_password_fields_weakness (пароль: {password}) ==="
+    )
 
 
 @allure.epic("Страница администратора")
@@ -370,7 +403,7 @@ def test_match_passwords(admin_page, admin_add_page, driver):
         allure.attach(
             driver.get_screenshot_as_png(),
             name="conf_password_entered",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
     with allure.step("Активируем валидацию поля подтверждения пароля"):
@@ -384,13 +417,16 @@ def test_match_passwords(admin_page, admin_add_page, driver):
         allure.attach(
             driver.get_screenshot_as_png(),
             name="match_password_error",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
         assert is_error_visible, "Ожидалась ошибка несоответствия паролей"
-        logger.info("✓ Сообщение об ошибке несоответствия паролей отображается корректно")
+        logger.info(
+            "✓ Сообщение об ошибке несоответствия паролей отображается корректно"
+        )
 
     logger.info("=== Конец test_match_passwords ===")
+
 
 @allure.epic("Страница добавления")
 @allure.feature("Добавление пользователя")
@@ -410,7 +446,7 @@ def test_negative_empty_fields(admin_page, admin_add_page, driver):
         allure.attach(
             driver.get_screenshot_as_png(),
             name="empty_field",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
     with allure.step("Проверка ошибки пустого поля"):
@@ -434,14 +470,16 @@ def test_adding_user(admin_page, admin_add_page, fake, driver):
     with allure.step("Вводим валидные данные"):
         logger.info("Полный ввод валидных данных")
         username = fake.pystr(min_chars=7, max_chars=7)
-        password = fake.password(length=12, special_chars=True, digits=True, upper_case=True, lower_case=True)
+        password = fake.password(
+            length=12, special_chars=True, digits=True, upper_case=True, lower_case=True
+        )
         name = admin_add_page.get_name_text()
         admin_add_page.add_user(username, password, name)
 
         allure.attach(
             driver.get_screenshot_as_png(),
             name="fulfillment",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
     with allure.step("Нажимаем кнопку сохранить"):
@@ -451,7 +489,7 @@ def test_adding_user(admin_page, admin_add_page, fake, driver):
     allure.attach(
         driver.get_screenshot_as_png(),
         name="success",
-        attachment_type=allure.attachment_type.PNG
+        attachment_type=allure.attachment_type.PNG,
     )
 
     with allure.step("Проверка успешного добавления"):
@@ -466,4 +504,3 @@ def test_adding_user(admin_page, admin_add_page, fake, driver):
         logger.info(f"✓ Пользователь найден")
 
     logger.info(f"=== Конец test_adding_user ===")
-

@@ -4,26 +4,22 @@ from Diplom.core.base_element import BaseElement
 from Diplom.core.base_page import BasePage
 
 
-class JobTitlePage(BasePage):
+class PayGradesPage(BasePage, BaseElement):
 
     def __init__(self, driver):
         super().__init__(driver)
         self.LOGO = BaseElement(driver, (By.CLASS_NAME, "oxd-brand-banner"))
-        self.JOB_TITLE = BaseElement(
+        self.MAIN_TITLE = BaseElement(
             driver, (By.CLASS_NAME, "oxd-topbar-header-breadcrumb-level")
         )
         self.PAGE_TITLE = BaseElement(
             driver, (By.CLASS_NAME, "orangehrm-header-container")
         )
-        self.MENU_ADMIN = BaseElement(driver, (By.XPATH, "//span[text()='Admin']"))
-        self.ADMIN_JOB = BaseElement(driver, (By.XPATH, "//span[text()='Job ']"))
-        self.ADMIN_JOB_TITLES = BaseElement(
-            driver,
-            (
-                By.XPATH,
-                "//a[@class='oxd-topbar-body-nav-tab-link' and text()='Job Titles']",
-            ),
+        self.JOB_DROPDOWN = BaseElement(driver, (By.XPATH, "//span[text()='Job ']"))
+        self.MENU_ADMIN = BaseElement(
+            driver, (By.XPATH, "//a[contains(@href, '/admin/viewAdminModule')]")
         )
+        self.PAY_GRADES = BaseElement(driver, (By.XPATH, "//a[text()='Pay Grades']"))
         # Кнопки
         self.ADD_BUTTON = BaseElement(
             driver, (By.XPATH, "(//button[@type='button'])[4]")
@@ -40,18 +36,31 @@ class JobTitlePage(BasePage):
         self.REDACT_SECOND = BaseElement(
             driver, (By.XPATH, "(//button[@type='button'])[8]")
         )
+        # Действия в всплывающем окне удаления
+        self.NO_CANCEL = BaseElement(
+            driver,
+            (
+                By.XPATH,
+                "//button[@type='button' and contains(@class, 'orangehrm-button-margin')]",
+            ),
+        )
+        self.YES_DELETE = BaseElement(
+            driver,
+            (
+                By.XPATH,
+                "//button[@type='button' and contains(@class, 'oxd-button--label-danger')]",
+            ),
+        )
 
     def check_that_page_opened(self):
         self.LOGO.should_be_visible()
-        self.JOB_TITLE.should_be_visible()
-        self.ADMIN_JOB.should_be_visible()
-        self.ADD_BUTTON.should_be_visible()
+        self.MAIN_TITLE.should_be_visible()
         self.DELETE_FIRST.should_be_visible()
-        self.ADMIN_JOB_TITLES.should_be_not_visible()
         self.REDACT_FIRST.should_be_visible()
         self.DELETE_SECOND.should_be_visible()
         self.REDACT_SECOND.should_be_visible()
+        self.ADD_BUTTON.should_be_visible()
         self.PAGE_TITLE.should_be_visible()
 
-        self.JOB_TITLE.should_be_has_text("Job")
-        self.PAGE_TITLE.should_contain_text("Job Titles")
+        self.MAIN_TITLE.should_be_has_text("Job")
+        self.PAGE_TITLE.should_contain_text("Pay Grades")

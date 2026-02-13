@@ -10,7 +10,7 @@ class DashboardPage(BasePage):
         super().__init__(driver)
         self.LOGO = BaseElement(driver, (By.CLASS_NAME, "oxd-brand-banner"))
         self.SEARCH_FIELD = BaseElement(
-            driver, (By.CSS_SELECTOR, "input[placeholder='Search']")
+            driver, (By.CSS_SELECTOR, "input.oxd-input[placeholder='Search']")
         )
         self.DASHBOARD_TITLE = BaseElement(
             driver, (By.CLASS_NAME, "oxd-topbar-header-breadcrumb-module")
@@ -53,6 +53,12 @@ class DashboardPage(BasePage):
             driver, (By.XPATH, "//span[text()='Maintenance']")
         )
         self.MENU_BUZZ = BaseElement(driver, (By.XPATH, "//span[text()='Buzz']"))
+        # Ссылки
+        self.DOWN_LINK = BaseElement(driver, (By.LINK_TEXT, "OrangeHRM, Inc"))
+        self.UPGRADE_LINK = BaseElement(
+            driver, (By.CLASS_NAME, "orangehrm-upgrade-button")
+        )
+        self.HELP_LINK = BaseElement(driver, (By.XPATH, "//button[@title='Help']"))
         # Виджеты
         self.QUICK_LAUNCH = BaseElement(
             driver, (By.XPATH, "//p[text()='Quick Launch']")
@@ -63,8 +69,12 @@ class DashboardPage(BasePage):
         self.MY_ACTIONS_WIDGET = BaseElement(
             driver, (By.XPATH, "//p[text()='My Actions']")
         )
-        self.SELF_REVIEW = BaseElement(driver, (By.XPATH, "(//button[@type='button'])[5]"))
-        self.CANDIDATE_TO_INTERVIEW = BaseElement(driver, (By.XPATH, "(//button[@type='button'])[6]"))
+        self.SELF_REVIEW = BaseElement(
+            driver, (By.XPATH, "(//button[@type='button'])[5]")
+        )
+        self.CANDIDATE_TO_INTERVIEW = BaseElement(
+            driver, (By.XPATH, "(//button[@type='button'])[6]")
+        )
         self.ASSIGN_LEAVE_CARD = BaseElement(
             driver, (By.XPATH, "//button[@title='Assign Leave']")
         )
@@ -77,11 +87,15 @@ class DashboardPage(BasePage):
         self.APPLY_LEAVE_CARD = BaseElement(
             driver, (By.XPATH, "//button[@title='Apply Leave']")
         )
-        self.MY_LEAVE_CARD = BaseElement(driver, (By.XPATH, "//button[@title='My Leave']"))
+        self.MY_LEAVE_CARD = BaseElement(
+            driver, (By.XPATH, "//button[@title='My Leave']")
+        )
         self.MY_TIMESHEET_CARD = BaseElement(
             driver, (By.XPATH, "//button[@title='My Timesheet']")
         )
-        self.PUNCH_OUT = BaseElement(driver, (By.XPATH, "(//button[@type='button'])[4]"))
+        self.PUNCH_OUT = BaseElement(
+            driver, (By.XPATH, "(//button[@type='button'])[4]")
+        )
         self.CONFIG_EMPL_LEAVE = BaseElement(
             driver, (By.CLASS_NAME, "orangehrm-leave-card-icon")
         )
@@ -90,7 +104,9 @@ class DashboardPage(BasePage):
         )
         # Кнопки
         self.CANCEL_BUTTON = BaseElement(driver, (By.CLASS_NAME, "oxd-button--ghost"))
-        self.SHOW_BUTTON = BaseElement(driver, (By.CSS_SELECTOR, "span.oxd-switch-input.--label-right"))
+        self.SHOW_BUTTON = BaseElement(
+            driver, (By.CSS_SELECTOR, "span.oxd-switch-input.--label-right")
+        )
 
     def click_logout(self):
         self.USER_DROPDOWN.click()

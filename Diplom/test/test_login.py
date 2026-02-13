@@ -1,6 +1,6 @@
+import allure
 import pytest
 import pytest_check as check
-import allure
 
 from conftest import logger
 from Diplom.page_obj.dashboard_page import DashboardPage
@@ -36,13 +36,14 @@ def test_check_all_elements(login_page, open_page, driver):
         allure.attach(
             driver.get_screenshot_as_png(),
             name="login_page",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
         assert login_page.driver.current_url == URLS.LOGIN
         logger.info("✓ Страница логина открыта корректно")
 
     logger.info("=== Конец test_check_all_elements ===")
+
 
 @allure.epic("Страница логина")
 @allure.feature("Авторизация")
@@ -58,7 +59,7 @@ def test_positive_login(login_page, dashboard_page, open_page, driver):
         allure.attach(
             driver.get_screenshot_as_png(),
             name="after_login",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
     with allure.step("Проверяем дашборд"):
@@ -70,6 +71,7 @@ def test_positive_login(login_page, dashboard_page, open_page, driver):
         logger.info("✓ Успешный логин, открыта страница дашборда")
 
     logger.info("=== Конец test_positive_login ===")
+
 
 @allure.epic("Страница логина")
 @allure.feature("Авторизация")
@@ -93,7 +95,7 @@ def test_logout(login_page, dashboard_page, open_page, driver):
         allure.attach(
             driver.get_screenshot_as_png(),
             name="after_logout",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
     with allure.step("Проверяем страницу логина"):
@@ -124,7 +126,7 @@ def test_negative_username(login_page, open_page, user, password, expect, driver
         allure.attach(
             login_page.driver.get_screenshot_as_png(),
             name=f"error_{user}",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
     with allure.step("Проверка ошибки"):
@@ -134,7 +136,7 @@ def test_negative_username(login_page, open_page, user, password, expect, driver
         allure.attach(
             f"Ожидалось: {expect}\nПолучено: {actual_error}",
             name="error_validation",
-            attachment_type=allure.attachment_type.TEXT
+            attachment_type=allure.attachment_type.TEXT,
         )
 
         logger.info(f"Ошибка на странице: '{actual_error}'")
@@ -164,7 +166,7 @@ def test_negative_empty_fields(login_page, open_page, user, password, expect, dr
         allure.attach(
             login_page.driver.get_screenshot_as_png(),
             name=f"empty_field_{'username' if not user else 'password'}",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
     with allure.step("Проверка ошибки пустого поля"):
@@ -173,16 +175,17 @@ def test_negative_empty_fields(login_page, open_page, user, password, expect, dr
 
     logger.info(f"=== Конец test_negative_empty_fields ===")
 
-@ pytest.mark.parametrize(
-        "link_element,expected_url",
-        [
-            ("LINKEDIN_LINK", "linkedin.com"),
-            ("FACEBOOK_LINK", "facebook.com"),
-            ("TWITTER_LINK", "x.com"),
-            ("YOUTUBE_LINK", "youtube.com"),
-            ("SITE_LINK", "orangehrm.com"),
-        ],
-    )
+
+@pytest.mark.parametrize(
+    "link_element,expected_url",
+    [
+        ("LINKEDIN_LINK", "linkedin.com"),
+        ("FACEBOOK_LINK", "facebook.com"),
+        ("TWITTER_LINK", "x.com"),
+        ("YOUTUBE_LINK", "youtube.com"),
+        ("SITE_LINK", "orangehrm.com"),
+    ],
+)
 @allure.epic("Страница логина")
 @allure.feature("Переход по ссылкам")
 @allure.title("Проверка перехода по ссылкам")
@@ -205,7 +208,7 @@ def test_social_links(login_page, link_element, expected_url, open_page, driver)
         allure.attach(
             driver.get_screenshot_as_png(),
             name=f"social_{link_element}",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
         assert expected_url in new_url, f"URL {new_url} not contains {expected_url}"
@@ -217,9 +220,10 @@ def test_social_links(login_page, link_element, expected_url, open_page, driver)
         logger.info("✓ Вернулись в исходное окно")
 
         assert original_url == login_page.driver.current_url
-        logger.info("✓ URL восстановлен корректно")
+        logger.info("✓ URL прежний")
 
     logger.info(f"=== Конец test_social_links: {link_element} ===")
+
 
 @allure.epic("Страница логина")
 @allure.feature("Авторизация")
@@ -234,7 +238,7 @@ def test_forgot_password_link(login_page, open_page, driver):
         allure.attach(
             driver.get_screenshot_as_png(),
             name="forgot_password_page",
-            attachment_type=allure.attachment_type.PNG
+            attachment_type=allure.attachment_type.PNG,
         )
 
     with allure.step("Проверяем URL страницы восстановления"):
@@ -245,5 +249,3 @@ def test_forgot_password_link(login_page, open_page, driver):
         logger.info("✓ Страница восстановления пароля открыта корректно")
 
     logger.info("=== Конец test_forgot_password_link ===")
-
-

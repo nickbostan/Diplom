@@ -1,12 +1,14 @@
+pyautogui
 allure-python-commons
+pillow==12.1.0
 pytest-check==2.6.2
 webdriver-manager==4.0.2
 selenium==4.40.0
 python-dotenv
 pytest==9.0.2
 playwright==1.58.0
-faker==40.1.2
-pytest-playwright-visual-snapshot==0.4.0
+faker==40.4.0
+pytest-playwright-visual-snapshot==0.5.1
 pytest-repeat==0.9.4
 pytest-rerunfailures==16.1.0
 pytest-xdist == 3.8.0

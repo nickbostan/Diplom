@@ -113,21 +113,20 @@ allure open allure-report
 📁 Структура проекта
 text
 project/
-├── tests/                          # Тесты
-│   ├── test_login.py              # Тесты авторизации
-│   ├── test_dashboard.py          # Тесты дашборда
-│   └── conftest.py               # Конфигурация pytest
-├── pages/                         # Page Object Model
+├── tests/                          
+│   ├── test_login.py              
+│   ├── test_dashboard.py        
+│   └── conftest.py               
+├── pages/                      
 │   ├── login_page.py
 │   ├── dashboard_page.py
 │   └── base_page.py
-├── utils/                         # Вспомогательные утилиты
+├── utils/                 
 │   ├── logger.py
 │   ├── config.py
 │   └── helpers.py
-├── allure-results/                # Allure отчеты (авто)
-├── logs/                         # Логи тестирования (авто)
-├── screenshots/                  # Скриншоты (авто)
-├── requirements.txt              # Зависимости
-├── README.md                     # Этот файл
-└── .gitignore                    # Игнорируемые файлы
+├── allure-results/                
+├── logs/                       
+├── screenshots/              
+├── requirements.txt            
+└── .gitignore                   
