@@ -4,7 +4,7 @@ from Diplom.core.base_element import BaseElement
 from Diplom.core.base_page import BasePage
 
 
-class ClaimPage(BasePage):
+class ClaimPage(BasePage, BaseElement):
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -12,6 +12,7 @@ class ClaimPage(BasePage):
         self.CLAIM_TITLE = BaseElement(
             driver, (By.CLASS_NAME, "oxd-topbar-header-breadcrumb-module"))
         self.PAGE_TITLE = BaseElement(driver,(By.CLASS_NAME, "oxd-table-filter-header-title"))
+        self.PAGE_TITLE_ASSIGN = BaseElement(driver, (By.CLASS_NAME, "orangehrm-main-title"))
         self.MENU_CLAIM = BaseElement(
             driver, (By.XPATH, "//span[text()='Claim']")
         )
@@ -25,6 +26,7 @@ class ClaimPage(BasePage):
         self.EVENT_NAME_DROPDOWN = BaseElement(driver, (By.XPATH, "(//div[@class='oxd-select-text-input'])[1]"))
         self.STATUS_DROPDOWN = BaseElement(driver, (By.XPATH, "(//div[@class='oxd-select-text-input'])[2]"))
         self.INCLUDE_DROPDOWN = BaseElement(driver, (By.XPATH, "(//div[@class='oxd-select-text-input'])[3]"))
+        self.FIRST_OPTION_DROPDOWN = BaseElement(driver, (By.XPATH, "(//div[@class='oxd-select-option'])[2]"))
         # Кнопки
         self.SEARCH_BUTTON = BaseElement(driver, (By.CSS_SELECTOR, "button[type='submit']"))
         self.RESET_BUTTON = BaseElement(driver, (By.XPATH, "(//button[@type='button'])[5]"))
@@ -57,3 +59,16 @@ class ClaimPage(BasePage):
 
         self.CLAIM_TITLE.should_be_has_text("Claim")
         self.PAGE_TITLE.should_be_has_text("Employee Claims")
+
+
+    def input_search(self):
+        self.REFERENCE_ID.fill("1234")
+        self.FROM_DATE.fill("2016-02-05")
+        self.TO_DATE.fill("2025-25-08")
+        self.INCLUDE_DROPDOWN.click()
+        self.FIRST_OPTION_DROPDOWN.click()
+        self.STATUS_DROPDOWN.click()
+        self.FIRST_OPTION_DROPDOWN.click()
+        self.EVENT_NAME_DROPDOWN.click()
+        self.FIRST_OPTION_DROPDOWN.click()
+        return self

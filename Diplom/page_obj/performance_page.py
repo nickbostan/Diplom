@@ -1,10 +1,15 @@
-from selenium.webdriver.common.by import By
+import random
 
+from selenium.webdriver.common.by import By
 from Diplom.core.base_element import BaseElement
 from Diplom.core.base_page import BasePage
 
 
-class PerformancePage(BasePage):
+index_sub_unit = random.randint(2, 7)
+index_job = random.randint(2, 18)
+
+
+class PerformancePage(BasePage, BaseElement):
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -25,6 +30,9 @@ class PerformancePage(BasePage):
         self.EMPLOYEE_NAME = BaseElement(driver, (By.CSS_SELECTOR, "input[placeholder='Type for hints...']"))
         self.FROM_DATE = BaseElement(driver, (By.XPATH, "(//input[@placeholder='yyyy-dd-mm'])[1]"))
         self.TO_DATE = BaseElement(driver, (By.XPATH, "(//input[@placeholder='yyyy-dd-mm'])[2]"))
+        self.RANDOM_SUB_UNIT = BaseElement(driver, (By.XPATH, f"(//div[contains(@class, 'oxd-select-option')])[{index_sub_unit}]"))
+        self.RANDOM_JOB = BaseElement(driver, (By.XPATH, f"(//div[@class='oxd-select-option'])[{index_job}]"))
+        self.FIRST_OPTION_DROPDOWN = BaseElement(driver, (By.XPATH, "(//div[@class='oxd-select-option'])[2]"))
         # Кнопки
         self.SEARCH_BUTTON = BaseElement(driver, (By.CSS_SELECTOR, "button[type='submit']"))
         self.RESET_BUTTON = BaseElement(driver, (By.CSS_SELECTOR, "button[type='reset']"))
@@ -47,3 +55,17 @@ class PerformancePage(BasePage):
 
         self.PERFORMANCE_TITLE.should_be_has_text("Performance")
         self.PAGE_TITLE.should_be_has_text("Employee Reviews")
+
+
+    def input_search(self):
+        self.FROM_DATE.fill("2016-02-05")
+        self.TO_DATE.fill("2025-25-08")
+        self.INCLUDE_DROPDOWN.click()
+        self.FIRST_OPTION_DROPDOWN.click()
+        self.STATUS_DROPDOWN.click()
+        self.FIRST_OPTION_DROPDOWN.click()
+        self.SUB_UNIT_DROPDOWN.click()
+        self.RANDOM_SUB_UNIT.click()
+        self.JOB_TITLE_DROPDOWN.click()
+        self.RANDOM_JOB.click()
+        return self

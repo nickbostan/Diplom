@@ -69,7 +69,7 @@ pytest -m smoke
 pytest -v
 
 # Запуск конкретного теста
-pytest Diplom/test/test_login.py::test_positive_login
+pytest Diplom/test_pages/test_login.py::test_positive_login
 ```
 
 ## 🧪 Запуск тестов

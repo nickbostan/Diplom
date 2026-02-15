@@ -12,7 +12,7 @@ class CorpBrandingPage(BasePage):
         self.LOGO = BaseElement(driver, (By.CLASS_NAME, "oxd-brand-banner"))
         self.MAIN_TITLE = BaseElement(
             driver, (By.CLASS_NAME, "oxd-topbar-header-breadcrumb"))
-        self.PAGE_TITLE = BaseElement(driver,(By.CLASS_NAME, "oxd-text oxd-text--h6 orangehrm-main-title"))
+        self.PAGE_TITLE = BaseElement(driver,(By.CLASS_NAME, "orangehrm-main-title"))
         self.MENU_ADMIN = BaseElement(driver, (By.XPATH, "//span[text()='Admin']"))
         self.MORE = BaseElement(driver, (By.XPATH, "//span[text()='More ']"))
         self.CORP_BRANDING = BaseElement(driver, (By.XPATH, "//a[text()='Corporate Branding ']"))
@@ -22,7 +22,7 @@ class CorpBrandingPage(BasePage):
         self.SECONDARY_FONT_COLOR = BaseElement(driver,(By.XPATH, "(//div[@class='oxd-color-input-preview'])[4]"))
         self.PRIMARY_GRADIENT_COLOR1 = BaseElement(driver,(By.XPATH, "(//div[@class='oxd-color-input-preview'])[5]"))
         self.PRIMARY_GRADIENT_COLOR2 = BaseElement(driver,(By.XPATH, "(//div[@class='oxd-color-input-preview'])[6]"))
-
+        self.HEX_INPUT = BaseElement(driver, (By.XPATH, "(//div[@class='oxd-input oxd-input--active'])[2]"))
         # Добавление файлов
         self.CLIENT_LOGO = BaseElement(driver,(By.XPATH, "(//div[@class='oxd-file-button'])"))
         self.CLIENT_BANNER = BaseElement(driver,(By.XPATH, "(//div[@class='oxd-file-button'])[2]"))
@@ -58,10 +58,10 @@ class CorpBrandingPage(BasePage):
         self.RESET_TO_DEFAULT.should_be_visible()
         self.PREVIEW.should_be_visible()
         self.SOCIAL_MEDIA_CHECKBOX.should_be_visible()
-        #self.PAGE_TITLE.should_be_visible()
+        self.PAGE_TITLE.should_be_visible()
 
         self.MAIN_TITLE.should_be_has_text("Admin")
-        #self.PAGE_TITLE.should_be_has_text("Corporate Branding")
+        self.PAGE_TITLE.should_be_has_text("Corporate Branding")
 
         def set_color_by_index(self, driver, r, g, b, index=0):
             """

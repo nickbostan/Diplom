@@ -36,7 +36,7 @@ class PayGradesPage(BasePage, BaseElement):
         self.REDACT_SECOND = BaseElement(
             driver, (By.XPATH, "(//button[@type='button'])[8]")
         )
-        # Действия в всплывающем окне удаления
+        # Действия во всплывающем окне удаления
         self.NO_CANCEL = BaseElement(
             driver,
             (

@@ -190,6 +190,7 @@ def test_add_currency(driver, pay_grade, edit_pay_grade):
         )
 
         edit_pay_grade.SAVE_CURRENCY.click()
+        time.sleep(2)
         assert edit_pay_grade.check_message("Saved")
         logger.info("✓ Валюта BHD успешно добавлена")
 

@@ -1,8 +1,9 @@
-from selenium.webdriver.common.by import By
+import time
 
+from selenium.webdriver.common.by import By
 from Diplom.core.base_element import BaseElement
 from Diplom.core.base_page import BasePage
-
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 
 class MyInfoPage(BasePage, BaseElement):
 
@@ -54,9 +55,9 @@ class MyInfoPage(BasePage, BaseElement):
         self.SIN_NUMBER = BaseElement(
             driver, (By.XPATH, "(//input[contains(@class,'oxd-input--active')])[9]")
         )
-        self.NATIONALITY = BaseElement(driver, (By.CLASS_NAME, "oxd-select-text-input"))
+        self.NATIONALITY = BaseElement(driver, (By.CLASS_NAME, "oxd-select-text--active"))
         self.MARITAL_STATUS = BaseElement(
-            driver, (By.XPATH, "(//input[@class='oxd-select-text-input'])[2]")
+            driver, (By.XPATH, "(//div[@class='oxd-select-text oxd-select-text--active'])[2]")
         )
         self.DATE_OF_BIRTH = BaseElement(
             driver, (By.XPATH, "(//input[@placeholder='yyyy-dd-mm'])[2]")
@@ -69,12 +70,11 @@ class MyInfoPage(BasePage, BaseElement):
         )
         # Кнопки
         self.DOWNLOAD_ATTACH = BaseElement(
-            driver, (By.XPATH, "(//button[@class='oxd-table-cell-action-space'])[3]")
+            driver, (By.XPATH, "(//button[contains(@class, 'oxd-table-cell-action-space')])[3]")
         )
         self.DOWNLOAD_EL = BaseElement(driver, (By.XPATH, "//a[@id='file-link']"))
         self.UPLOAD_ATTACH = BaseElement(
-            driver, (By.CSS_SELECTOR, "input.oxd-file-input")
-        )
+            driver, (By.XPATH, "//input[@type='file']"))
         self.SAVE_MAIN_INFO = BaseElement(
             driver, (By.XPATH, "(//button[@type='submit'])")
         )
@@ -87,19 +87,34 @@ class MyInfoPage(BasePage, BaseElement):
         self.ADD_ATTACHMENT = BaseElement(
             driver, (By.XPATH, "(//button[@type='button'])[4]")
         )
-        # Если был выбран чекбокс то нумерация следующих кнопок будет 6,7 и 8 соответственно
+        # Если был выбран чекбокс, то нумерация следующих кнопок будет 6,7 и 8 соответственно
         self.REDACTION_ATTACHMENT = BaseElement(
             driver, (By.XPATH, "(//button[@type='button'])[5]")
         )
         self.DELETE_ATTACHMENT = BaseElement(
             driver, (By.XPATH, "(//button[@type='button'])[6]")
         )
-        self.UPLOAD_ATTACHMENT = BaseElement(
+        self.DOWNLOAD_ATTACHMENT = BaseElement(
             driver, (By.XPATH, "(//button[@type='button'])[7]")
         )
         self.BROWSE = BaseElement(driver, (By.XPATH, "//div[@class='oxd-file-button']"))
         self.HIDDEN_DELETE_BUTTON = BaseElement(
             driver, (By.XPATH, "(//button[@type='button'])[5]")
+        )
+        # Действия во всплывающем окне удаления
+        self.NO_CANCEL = BaseElement(
+            driver,
+            (
+                By.XPATH,
+                "//button[@type='button' and contains(@class, 'orangehrm-button-margin')]",
+            ),
+        )
+        self.YES_DELETE = BaseElement(
+            driver,
+            (
+                By.XPATH,
+                "//button[@type='button' and contains(@class, 'oxd-button--label-danger')]",
+            ),
         )
         # Чекбоксы
         self.GENERAL_CHECKBOX = BaseElement(
@@ -126,3 +141,24 @@ class MyInfoPage(BasePage, BaseElement):
         self.DRIVER_LICENSE.should_be_visible()
 
         self.MY_INFO_TITLE.should_be_has_text("Personal Details")
+
+
+
+    def update_info(self, first_name, middle_name, last_name, ids, other_id, drivers_license, license_expire, date_birth):
+        self.FIRST_NAME.fill(first_name)
+        self.MIDDLE_NAME.fill(middle_name)
+        self.LAST_NAME.fill(last_name)
+        time.sleep(2)
+        self.NATIONALITY.select_from_dropdown("Belarusian")
+        self.DRIVER_LICENSE.fill(drivers_license)
+        time.sleep(2)
+        try:
+            self.MARITAL_STATUS.select_from_dropdown("Single")
+        except (NoSuchElementException, ElementNotInteractableException):
+            pass
+        self.MARITAL_STATUS.select_from_dropdown("Other")
+        self.LICENSE_EXPIRE.fill(license_expire)
+        self.DATE_OF_BIRTH.fill(date_birth)
+        self.ID.fill(ids)
+        self.OTHER_ID.fill(other_id)
+        return self

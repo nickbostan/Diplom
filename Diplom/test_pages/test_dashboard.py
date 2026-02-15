@@ -221,3 +221,5 @@ def test_search(dashboard_page, driver):
         logger.info("Все значения меню снова отображаются")
 
     logger.info("=== Конец test_search ===")
+
+

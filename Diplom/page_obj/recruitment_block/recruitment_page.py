@@ -1,10 +1,15 @@
-from selenium.webdriver.common.by import By
+import random
+import re
 
+from selenium.webdriver.common.by import By
 from Diplom.core.base_element import BaseElement
 from Diplom.core.base_page import BasePage
 
 
-class RecruitmentPage(BasePage):
+index_vacancy = random.randint(2, 7)
+index_job = random.randint(2, 18)
+
+class RecruitmentPage(BasePage, BaseElement):
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -26,6 +31,10 @@ class RecruitmentPage(BasePage):
         self.KEYWORDS = BaseElement(driver, (By.XPATH, "(//input[@placeholder='Enter comma seperated words...'])"))
         self.FROM_DATE = BaseElement(driver, (By.XPATH, "(//input[@placeholder='From'])"))
         self.TO_DATE = BaseElement(driver, (By.XPATH, "(//input[@placeholder='To'])"))
+        self.RANDOM_VACANCY = BaseElement(driver, (By.XPATH, f"(//div[@class='oxd-select-option'])[{index_vacancy}]"))
+        self.RANDOM_JOB = BaseElement(driver, (By.XPATH, f"(//div[@class='oxd-select-option'])[{index_job}]"))
+        self.FIRST_OPTION_DROPDOWN = BaseElement(driver, (By.XPATH, "(//div[@class='oxd-select-option'])[2]"))
+        self.FIRST_FOUND_CANDIDATE = BaseElement(driver, (By.XPATH, "//div[@class='oxd-autocomplete-option']"))
         # Кнопки
         self.SEARCH_BUTTON = BaseElement(driver, (By.CSS_SELECTOR, "button[type='submit']"))
         self.RESET_BUTTON = BaseElement(driver, (By.CSS_SELECTOR, "button[type='reset']"))
@@ -37,13 +46,18 @@ class RecruitmentPage(BasePage):
         self.DOWNLOAD_RESUME_SECOND_CAND = BaseElement(driver, (By.XPATH, "(//button[@type='button'])[10]"))
         self.DELETE_SELECTED = BaseElement(
             driver, (By.CLASS_NAME, "oxd-button--label-danger"))
-        #Checkbox
+        # Checkbox
         self.GENERAL_CHECKBOX = BaseElement(
             driver, (By.XPATH, "(//span[contains(@class,'--label-right')])[1]"))
         self.FIRST_CAND = BaseElement(
             driver, (By.XPATH, "(//span[contains(@class,'--label-right')])[2]"))
         self.SECOND_CAND = BaseElement(
             driver, (By.XPATH, "(//span[contains(@class,'--label-right')])[3]"))
+        # Счетчик
+        self.COUNT = BaseElement(driver, (By.XPATH,
+                                          "(//span[contains(@class, 'oxd-text--span')])[13]"))
+        # Ошибка
+        self.ERROR = BaseElement(driver, (By.CLASS_NAME, "oxd-input-field-error-message"))
 
 
 
@@ -71,17 +85,31 @@ class RecruitmentPage(BasePage):
         self.RECRUITMENT_TITLE.should_be_has_text("Recruitment")
         self.PAGE_TITLE.should_be_has_text("Candidates")
 
-    # def select_job(self, job):
-       # self.select_from_dropdown(self.JOB_TITLE_DROPDOWN, job)
 
-    # def select_status(self, status):
-       # self.select_from_dropdown(self.STATUS_DROPDOWN, status)
 
-    #def select_from_dropdown_general(self, dropdown_locator, option_text):
-        #dropdown = get_element(dropdown_locator)
-        #dropdown.click()
+    def input_search(self):
 
-       # option = get_element(
-          #  (By.XPATH, f"//div[contains(@class, 'oxd-select-text-input') and contains(text()='{option_text}')]")
-       # )
-       # option.click()
+        self.KEYWORDS.fill("bla bla")
+        self.FROM_DATE.fill("2016-02-05")
+        self.TO_DATE.fill("2025-25-08")
+        self.JOB_TITLE_DROPDOWN.click()
+        self.RANDOM_JOB.click()
+        self.VACANCY_DROPDOWN.click()
+        self.RANDOM_VACANCY.click()
+        self.METHOD_DROPDOWN.click()
+        self.FIRST_OPTION_DROPDOWN.click()
+        self.HIRING_MANAGER_DROPDOWN.click()
+        self.FIRST_OPTION_DROPDOWN.click()
+        return self
+
+
+    def get_records_count(self):
+        text = self.COUNT.get_text()
+        match = re.search(r'\((\d+)\)', text)
+        return int(match.group(1)) if match else 0
+
+
+    def check_that_error_is_visible(self, text):
+        self.ERROR.should_be_visible()
+        self.ERROR.should_contain_text(text)
+        return self

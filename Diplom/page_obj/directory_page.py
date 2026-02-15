@@ -1,9 +1,12 @@
-from selenium.webdriver.common.by import By
 
+from selenium.webdriver.common.by import By
 from Diplom.core.base_element import BaseElement
 from Diplom.core.base_page import BasePage
 
-class DirectoryPage(BasePage):
+
+
+
+class DirectoryPage(BasePage, BaseElement):
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -19,6 +22,7 @@ class DirectoryPage(BasePage):
         self.EMPLOYEE_NAME = BaseElement(driver, (By.XPATH, '//input[@placeholder="Type for hints..."]'))
         self.JOB_TITLE_DROPDOWN = BaseElement(driver, (By.XPATH, "(//div[@class='oxd-select-text-input'])[1]"))
         self.LOCATION = BaseElement(driver, (By.XPATH, "(//div[@class='oxd-select-text-input'])[2]"))
+        self.FIRST_OPTION_DROPDOWN = BaseElement(driver, (By.XPATH, "(//div[@class='oxd-select-option'])[2]"))
         # Кнопки
         self.SEARCH_BUTTON = BaseElement(driver, (By.CSS_SELECTOR, "button[type='submit']"))
         self.RESET_BUTTON = BaseElement(driver, (By.CSS_SELECTOR, "button[type='reset']"))
@@ -41,3 +45,4 @@ class DirectoryPage(BasePage):
 
         self.DIRECTORY_TITLE.should_be_has_text("Directory")
         self.PAGE_TITLE.should_be_has_text("Directory")
+

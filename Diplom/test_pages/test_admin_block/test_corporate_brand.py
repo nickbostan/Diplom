@@ -5,6 +5,7 @@ import pytest
 #import allure
 
 #from conftest import logger
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 from Diplom.page_obj.admin_block.corporate_branding import CorpBrandingPage
 from Diplom.page_obj.login_page import LoginPage
 from Diplom.urls import URLS
@@ -23,10 +24,10 @@ def corp_branding_page(driver):
 def test_corp_branding_page(corp_branding_page, driver):
     corp_branding_page.MENU_ADMIN.click()
     try:
-        corp_branding_page.CORP_BRANDING.click()
-    except:
         corp_branding_page.MORE.click()
-        corp_branding_page.CORP_BRANDING.click()
+    except (NoSuchElementException, ElementNotInteractableException):
+        pass
+    corp_branding_page.CORP_BRANDING.click()
     corp_branding_page.check_that_page_opened()
     assert corp_branding_page.driver.current_url == URLS.CORP_BRANDING
 

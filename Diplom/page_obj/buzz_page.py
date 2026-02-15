@@ -72,7 +72,7 @@ class BuzzPage(BasePage, BaseElement):
         self.VIDEO_URL = BaseElement(
             driver, (By.XPATH, "(//textarea[@placeholder='Paste Video URL'])")
         )
-        self.ADD_PHOTO = BaseElement(driver, (By.CSS_SELECTOR, "input[type='file']"))
+        self.ADD_PHOTO = BaseElement(driver, (By.XPATH, "//input[@type='file']"))
         self.ALERTION = BaseElement(
             driver, (By.XPATH, "(//p[@class='oxd-alert-content-text'])")
         )

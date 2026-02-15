@@ -1,10 +1,10 @@
 import time
 
-import pyautogui
 import pytest
 from faker import Faker
+from selenium.webdriver.common.by import By
 
-from Diplom.files import IMG_2, IMG_BIG
+from Diplom.files import IMG_2, IMG_BIG, RES
 from Diplom.page_obj.buzz_page import BuzzPage
 from Diplom.page_obj.login_page import LoginPage
 from Diplom.urls import URLS
@@ -47,11 +47,11 @@ def test_post_photo(buzz_page, driver, fake):
     buzz_page.MENU_BUZZ.click()
     buzz_page.SHARE_PHOTOS.click()
     buzz_page.FIELD_POST_VIDEO_PHOTO.fill(post_text)
-    buzz_page.ADD_PHOTO.send_keys(IMG_2)
-    buzz_page.ADD_PHOTO.send_keys(IMG_2)
-    buzz_page.ADD_PHOTO.send_keys(IMG_2)
-    buzz_page.ADD_PHOTO.send_keys(IMG_2)
-    buzz_page.ADD_PHOTO.send_keys(IMG_2)
+    buzz_page.ADD_PHOTO.send_keys(str(IMG_2))
+    buzz_page.ADD_PHOTO.send_keys(str(IMG_2))
+    buzz_page.ADD_PHOTO.send_keys(str(IMG_2))
+    buzz_page.ADD_PHOTO.send_keys(str(IMG_2))
+    buzz_page.ADD_PHOTO.send_keys(str(IMG_2))
     assert buzz_page.ADD_PHOTO.should_be_not_visible()
     buzz_page.REMOVE_PHOTO_BUTTON.click()
     assert buzz_page.ADD_PHOTO.should_be_visible()
@@ -108,3 +108,5 @@ def test_video_post_errors(buzz_page, driver):
     time.sleep(4)
     assert buzz_page.ERROR_VIDEO.should_be_visible
     assert buzz_page.ERROR_VIDEO.should_contain_text("This URL is not a valid URL")
+
+
