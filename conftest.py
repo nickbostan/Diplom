@@ -1,150 +1,48 @@
 import logging
 import os
-import pytest
-
-
+import re
 from datetime import datetime
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.edge.options import Options as EdgeOptions
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+
+import pytest
+from playwright.sync_api import Page, sync_playwright
 
 
-def pytest_addoption(parser):
-    parser.addoption(
-        "--env",
-        action="store",
-        default="test_pages",
-        help="Environment: test_pages, staging, production",
-    )
-    # Новые опции для Docker
-    parser.addoption(
-        "--selenium-browser",
-        action="store",
-        default="chrome",
-        help="Browser: chrome, firefox, edge",
-    )
-    parser.addoption(
-        "--remote-url",
-        action="store",
-        default=None,
-        help="Selenium Grid remote URL (e.g., http://selenium-hub:4444/wd/hub)",
-    )
-
-@pytest.fixture(scope="function")
-def driver(request, tmp_path):
-    browser = request.config.getoption("--selenium-browser")
-    remote_url = request.config.getoption("--remote-url")
-    headless = True
-
-    # Папка для загрузок – можно переопределить через переменную окружения
-    download_dir = os.getenv("DOWNLOAD_DIR", str(tmp_path))
-
-    if browser == "chrome":
-        opts = ChromeOptions()
-        opts.headless = headless
-        opts.add_argument("--window-size=1080,1680")
-        opts.add_argument("--no-sandbox")
-        opts.add_argument("--disable-dev-shm-usage")
-        prefs = {
-            "download.default_directory": download_dir,
-            "download.prompt_for_download": False,
-            "safebrowsing.enabled": True,
-        }
-        opts.add_experimental_option("prefs", prefs)
-        if remote_url:
-            driver = webdriver.Remote(command_executor=remote_url, options=opts)
-        else:
-            driver = webdriver.Chrome(options=opts)
-
-    elif browser == "firefox":
-        opts = FirefoxOptions()
-        opts.headless = headless
-        opts.add_argument("--width=1080")
-        opts.add_argument("--height=1680")
-        profile = FirefoxProfile()
-        profile.set_preference("browser.download.folderList", 2)
-        profile.set_preference("browser.download.dir", download_dir)
-        profile.set_preference("browser.download.manager.showWhenStarting", False)
-        profile.set_preference(
-            "browser.helperApps.neverAsk.saveToDisk",
-            "application/octet-stream,text/plain,application/pdf,application/zip"
-        )
-        profile.set_preference("pdfjs.disabled", True)
-        opts.profile = profile
-        if remote_url:
-            driver = webdriver.Remote(command_executor=remote_url, options=opts)
-        else:
-            driver = webdriver.Firefox(options=opts)
-
-    elif browser == "edge":
-        opts = EdgeOptions()
-        opts.headless = headless
-        opts.add_argument("--window-size=1080,1680")
-        prefs = {
-            "download.default_directory": download_dir,
-            "download.prompt_for_download": False,
-            "safebrowsing.enabled": True,
-        }
-        opts.add_experimental_option("prefs", prefs)
-        if remote_url:
-            driver = webdriver.Remote(command_executor=remote_url, options=opts)
-        else:
-            driver = webdriver.Edge(options=opts)
-    else:
-        raise ValueError(f"Unsupported browser: {browser}")
-
-    driver.implicitly_wait(10)
-    yield driver
-    driver.quit()
-
-
-
+# -------------------------------------------------------------------
+# Логирование
+# -------------------------------------------------------------------
 def create_logger():
     logger = logging.getLogger()
 
-    # Уровень логирования из переменной окружения
     logger_level = os.getenv("LOGGER_LEVEL", "INFO").upper()
-
-    # Преобразуем строку в уровень логирования
     level_map = {
         "DEBUG": logging.DEBUG,
         "INFO": logging.INFO,
         "WARNING": logging.WARNING,
         "ERROR": logging.ERROR,
-        "CRITICAL": logging.CRITICAL
+        "CRITICAL": logging.CRITICAL,
     }
-
     logger.setLevel(level_map.get(logger_level, logging.INFO))
 
-    # Создаем папку для логов если её нет
     log_dir = "test_logs"
     os.makedirs(log_dir, exist_ok=True)
 
-    # Имя файла с timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_file = os.path.join(log_dir, f"test_{timestamp}.log")
 
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S"
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
-
 
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(formatter)
 
-
-    file_handler = logging.FileHandler(log_file, encoding='utf-8')
+    file_handler = logging.FileHandler(log_file, encoding="utf-8")
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
 
-
     logger.handlers.clear()
-
-
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
 
@@ -156,13 +54,171 @@ def create_logger():
 
 logger = create_logger()
 
+
+# -------------------------------------------------------------------
+# Pytest опции командной строки
+# -------------------------------------------------------------------
+def pytest_addoption(parser):
+    parser.addoption(
+        "--env",
+        action="store",
+        default="test",
+        help="Environment: test, staging, production",
+    )
+    parser.addoption(
+        "--browser-type",
+        action="store",
+        default="chromium",
+        help="Browser: chromium, firefox, webkit (для Playwright)",
+    )
+    parser.addoption(
+        "--headless",
+        action="store_true",
+        default=True,
+        help="Run browser in headless mode",
+    )
+    # Оставляем для обратной совместимости, но не используем
+    parser.addoption(
+        "--remote-url",
+        action="store",
+        default=None,
+        help="(Ignored) Selenium Grid remote URL – не используется в Playwright",
+    )
+
+
+# -------------------------------------------------------------------
+# Фикстуры Playwright
+# -------------------------------------------------------------------
+@pytest.fixture(scope="session")
+def playwright():
+    with sync_playwright() as p:
+        yield p
+
+
+@pytest.fixture(scope="session")
+def browser(playwright, request):
+    browser_type = request.config.getoption("--browser-type").lower()
+    headless = request.config.getoption("--headless")
+
+    launch_options = {"headless": headless, "args": ["--window-size=1080,1680"]}
+
+    if browser_type == "chromium":
+        browser = playwright.chromium.launch(**launch_options)
+    elif browser_type == "firefox":
+        browser = playwright.firefox.launch(**launch_options)
+    elif browser_type == "webkit":
+        browser = playwright.webkit.launch(**launch_options)
+    else:
+        raise ValueError(f"Unsupported browser: {browser_type}")
+
+    logger.info(f"Запущен браузер: {browser_type}, headless={headless}")
+    yield browser
+    browser.close()
+    logger.info("Браузер закрыт")
+
+
+@pytest.fixture
+def context(browser):
+    context = browser.new_context(
+        viewport={"width": 1080, "height": 1680},  # type: ignore
+        accept_downloads=True,
+    )
+    yield context
+    context.close()
+
+
+@pytest.fixture
+def page(context):
+    page = context.new_page()
+    # Устанавливаем таймаут для ожиданий (аналог implicit_wait)
+    page.set_default_timeout(10000)  # 10 секунд
+    yield page
+    page.close()
+
+
+# -------------------------------------------------------------------
+# Фикстура для Allure (создание директории)
+# -------------------------------------------------------------------
 def pytest_configure(config):
     allure_dir = "allure-results"
     os.makedirs(allure_dir, exist_ok=True)
 
-@pytest.fixture(scope="function")
+
+# -------------------------------------------------------------------
+# Логирование начала и конца теста
+# -------------------------------------------------------------------
+@pytest.fixture(autouse=True)
 def log_test(request):
     test_name = request.node.name
-    logger.info(f"Starting test_pages: {test_name}")
+    logger.info(f"=== Начало теста: {test_name} ===")
     yield
-    logger.info(f"Finished test_pages: {test_name}")
+    logger.info(f"=== Конец теста: {test_name} ===")
+
+
+@pytest.fixture
+def login_page(page: Page):
+    from Diplom.pages.login_page import LoginPage
+
+    return LoginPage(page)
+
+
+@pytest.fixture
+def buzz_page(page: Page, login_page):
+    # Автоматический логин для всех тестов Buzz
+    login_page.open()
+    login_page.login("Admin", "admin123")
+    from Diplom.pages.buzz_page import BuzzPage
+
+    return BuzzPage(page)
+
+
+@pytest.fixture(scope="session")
+def api_context(playwright):
+    """Создаёт API контекст с базовым URL и выполняет логин."""
+    # Создаём новый контекст запросов
+    request_ctx = playwright.request.new_context(
+        base_url="https://opensource-demo.orangehrmlive.com"
+    )
+
+    # Данные для логина
+    login_data = {
+        "username": "Admin",
+        "password": "admin123",
+    }
+
+    # 1. Получаем страницу логина для CSRF-токена
+    login_page_resp = request_ctx.get("/web/index.php/auth/login")
+    csrf_token = extract_csrf_token(login_page_resp.text())
+    if csrf_token:
+        login_data["_csrf"] = csrf_token
+
+    # 2. Отправляем POST-запрос на валидацию
+    request_ctx.post(
+        "/web/index.php/auth/validate",
+        data=login_data,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+    # Куки сессии сохранятся автоматически
+
+    # 3. После успешного логина получаем страницу дашборда для API-токена
+    dashboard_resp = request_ctx.get("/web/index.php/dashboard/index")
+    api_csrf = extract_csrf_token(dashboard_resp.text())
+    if api_csrf:
+        request_ctx.set_extra_http_headers({"X-CSRF-TOKEN": api_csrf})  # type: ignore
+
+    yield request_ctx
+    request_ctx.dispose()
+
+
+def extract_csrf_token(html: str) -> str:
+    """Извлекает CSRF-токен из HTML."""
+    patterns = [
+        r'<meta name="csrf-token" content="([^"]+)"',
+        r'<input type="hidden" name="_csrf" value="([^"]+)"',
+        r"window\.csrfToken = '([^']+)'",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, html)
+        if match:
+            return match.group(1)
+    return ""
