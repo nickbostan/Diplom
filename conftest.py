@@ -10,73 +10,94 @@ from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 
-@pytest.fixture(scope="function")
-def driver(tmp_path):
-    opts = ChromeOptions()
-    opts.headless = True
-    opts.add_argument("--window-size=1080,1680")
-    prefs = {
-        "download.default_directory": str(tmp_path),
-        "download.prompt_for_download": False,
-        "safebrowsing.enabled": True
-    }
-    opts.add_experimental_option("prefs", prefs)
-    driver = webdriver.Chrome(options=opts)
-    driver.implicitly_wait(10)
-    yield driver
-    driver.quit()
-
-
-@pytest.fixture(scope="function")
-def edge_driver(tmp_path):
-
-    opts = EdgeOptions()
-    opts.headless = True
-    opts.add_argument("--window-size=1080,1680")
-    prefs = {
-        "download.default_directory": str(tmp_path),
-        "download.prompt_for_download": False,
-        "safebrowsing.enabled": True
-    }
-    opts.add_experimental_option("prefs", prefs)
-    driver = webdriver.Edge(options=opts)
-    driver.implicitly_wait(10)
-    yield driver
-    driver.quit()
-
-
-@pytest.fixture(scope="function")
-def firefox_driver(tmp_path):
-
-    opts = FirefoxOptions()
-    opts.headless = True
-    opts.add_argument("--width=1080")
-    opts.add_argument("--height=1680")
-
-
-    profile = FirefoxProfile()
-    profile.set_preference("browser.download.folderList", 2)
-    profile.set_preference("browser.download.dir", str(tmp_path))
-    profile.set_preference("browser.download.manager.showWhenStarting", False)
-    profile.set_preference("browser.helperApps.neverAsk.saveToDisk",
-                           "application/octet-stream,text/plain,application/pdf,application/zip")
-    profile.set_preference("pdfjs.disabled", True)
-    opts.profile = profile
-
-    driver = webdriver.Firefox(options=opts)
-    driver.implicitly_wait(10)
-    yield driver
-    driver.quit()
-
 
 def pytest_addoption(parser):
-
     parser.addoption(
         "--env",
         action="store",
         default="test_pages",
         help="Environment: test_pages, staging, production",
     )
+    # Новые опции для Docker
+    parser.addoption(
+        "--selenium-browser",
+        action="store",
+        default="chrome",
+        help="Browser: chrome, firefox, edge",
+    )
+    parser.addoption(
+        "--remote-url",
+        action="store",
+        default=None,
+        help="Selenium Grid remote URL (e.g., http://selenium-hub:4444/wd/hub)",
+    )
+
+@pytest.fixture(scope="function")
+def driver(request, tmp_path):
+    browser = request.config.getoption("--selenium-browser")
+    remote_url = request.config.getoption("--remote-url")
+    headless = True
+
+    # Папка для загрузок – можно переопределить через переменную окружения
+    download_dir = os.getenv("DOWNLOAD_DIR", str(tmp_path))
+
+    if browser == "chrome":
+        opts = ChromeOptions()
+        opts.headless = headless
+        opts.add_argument("--window-size=1080,1680")
+        opts.add_argument("--no-sandbox")
+        opts.add_argument("--disable-dev-shm-usage")
+        prefs = {
+            "download.default_directory": download_dir,
+            "download.prompt_for_download": False,
+            "safebrowsing.enabled": True,
+        }
+        opts.add_experimental_option("prefs", prefs)
+        if remote_url:
+            driver = webdriver.Remote(command_executor=remote_url, options=opts)
+        else:
+            driver = webdriver.Chrome(options=opts)
+
+    elif browser == "firefox":
+        opts = FirefoxOptions()
+        opts.headless = headless
+        opts.add_argument("--width=1080")
+        opts.add_argument("--height=1680")
+        profile = FirefoxProfile()
+        profile.set_preference("browser.download.folderList", 2)
+        profile.set_preference("browser.download.dir", download_dir)
+        profile.set_preference("browser.download.manager.showWhenStarting", False)
+        profile.set_preference(
+            "browser.helperApps.neverAsk.saveToDisk",
+            "application/octet-stream,text/plain,application/pdf,application/zip"
+        )
+        profile.set_preference("pdfjs.disabled", True)
+        opts.profile = profile
+        if remote_url:
+            driver = webdriver.Remote(command_executor=remote_url, options=opts)
+        else:
+            driver = webdriver.Firefox(options=opts)
+
+    elif browser == "edge":
+        opts = EdgeOptions()
+        opts.headless = headless
+        opts.add_argument("--window-size=1080,1680")
+        prefs = {
+            "download.default_directory": download_dir,
+            "download.prompt_for_download": False,
+            "safebrowsing.enabled": True,
+        }
+        opts.add_experimental_option("prefs", prefs)
+        if remote_url:
+            driver = webdriver.Remote(command_executor=remote_url, options=opts)
+        else:
+            driver = webdriver.Edge(options=opts)
+    else:
+        raise ValueError(f"Unsupported browser: {browser}")
+
+    driver.implicitly_wait(10)
+    yield driver
+    driver.quit()
 
 
 

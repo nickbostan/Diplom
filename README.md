@@ -7,6 +7,8 @@
 - Python
 - [pytest](https://docs.pytest.org/)
 - Selenium
+- Docker
+- GitActions
 - Allure и Logger (для генерации отчётов)
 - Page Object Pattern
 - Скриншоты при ошибках и успешных регистрациях
@@ -19,6 +21,7 @@
 - ✅ Allure отчеты с скриншотами
 - ✅ Параметризованные тесты
 - ✅ Page Object Model архитектура
+- ✅ Запуск через Docker
 
 ## 🚀 Быстрый старт
 
@@ -70,7 +73,55 @@ pytest -v
 
 # Запуск конкретного теста
 pytest Diplom/test_pages/test_login.py::test_positive_login
+
+# Запуск на разных браузерах
+pytest # тут по умолчанию Chrome
+pytest --selenium-browser=firefox
+pytest --selenium-browser=edge
+
 ```
+
+
+## 🐳 Запуск в Docker
+
+### Требования
+- Установленные [Docker](https://docs.docker.com/get-docker/) 
+- и [Docker Compose](https://docs.docker.com/compose/install/).
+
+Запуск:
+
+```bash
+docker-compose -f docker-compose.grid.yml up --build
+
+# Повторный запуск 
+docker-compose -f docker-compose.grid.yml run tests pytest 
+--selenium-browser=firefox --remote-url=http://selenium-hub:4444/wd/hub -v
+
+# Остановка 
+docker-compose -f docker-compose.grid.yml down\
+
+# Показ статусов контейнеров
+docker-compose -f docker-compose.grid.yml ps
+
+# Очистка не использумеого
+docker-compose -f docker-compose.grid.yml down -v
+
+# Запуск конкретного теста
+docker-compose -f docker-compose.grid.yml run --rm tests pytest tests/test_dashboard.py::test_search 
+-v --selenium-browser=chrome --remote-url=http://selenium-hub:4444/wd/hub
+
+# Прогон тестов с пометками
+docker-compose -f docker-compose.grid.yml run --rm tests pytest -m smoke 
+-v --selenium-browser=firefox --remote-url=http://selenium-hub:4444/wd/hub
+
+# Логи хаба
+docker-compose -f docker-compose.grid.yml logs -f selenium-hub
+
+# Генерация отчетов
+allure generate allure-results -o allure-report --clean
+allure open allure-report
+```
+
 
 ## 🧪 Запуск тестов
 
@@ -111,22 +162,20 @@ allure open allure-report
 ```
 
 📁 Структура проекта
-text
-project/
-├── tests/                          
-│   ├── test_login.py              
-│   ├── test_dashboard.py        
-│   └── conftest.py               
-├── pages/                      
-│   ├── login_page.py
-│   ├── dashboard_page.py
-│   └── base_page.py
-├── utils/                 
-│   ├── logger.py
-│   ├── config.py
-│   └── helpers.py
-├── allure-results/                
-├── logs/                       
-├── screenshots/              
-├── requirements.txt            
-└── .gitignore                   
+Diplom/
+├── Diplom/
+│   ├── core/
+│   │   ├── base_element.py
+│   │   ├── base_page.py
+│   ├── page_obj/
+│   │   ├── dashboard_page.py
+│   │   ├── login_page.py
+│   ├── test_pages/   (или tests)
+│   │   ├── test_dashboard.py
+│   │   ├── conftest.py?  # но conftest обычно в корне или в tests/
+│   ├── urls.py
+├── requirements.txt
+├── conftest.py
+├── .gitignore   
+├── conftest.py   
+├── conftest.py   

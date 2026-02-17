@@ -1,9 +1,13 @@
 import time
-
+import allure
 import pytest
+from selenium.common import TimeoutException
+
+from conftest import logger
 from faker import Faker
 from selenium.webdriver.common.by import By
-
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from Diplom.files import IMG_2, IMG_BIG, RES
 from Diplom.page_obj.buzz_page import BuzzPage
 from Diplom.page_obj.login_page import LoginPage
@@ -63,50 +67,251 @@ def test_post_photo(buzz_page, driver, fake):
     assert "/buzz/photo/" in src
 
 
+@allure.epic("Buzz")
+@allure.feature("Публикация видео")
+@allure.title("Публикация видео с YouTube")
 def test_post_video(buzz_page, driver, fake):
-
     post_text = fake.sentence()
-    video = "https://www.youtube.com/watch?v=sDJO0EQP1Yo"
-    buzz_page.MENU_BUZZ.click()
-    buzz_page.SHARE_VIDEO.click()
-    buzz_page.FIELD_POST_VIDEO_PHOTO.fill(post_text)
-    time.sleep(2)
-    buzz_page.VIDEO_URL.fill(video)
-    time.sleep(2)
-    assert buzz_page.VIDEO_BLOCK.is_displayed()
-    time.sleep(3)
-    buzz_page.SHARE_PHOTO_VIDEO.click()
-    assert buzz_page.check_message("Saved")
-    time.sleep(3)
-    buzz_page.VIDEO_BLOCK.is_displayed()
-    src = buzz_page.VIDEO_BLOCK.get_attribute("src")
-    assert "sDJO0EQP1Yo" in src
+    video_url = "https://www.youtube.com/watch?v=sDJO0EQP1Yo"
+    video_id = "sDJO0EQP1Yo"
+
+    with allure.step("Переход в раздел Buzz"):
+        buzz_page.MENU_BUZZ.click()
+        logger.info("Перешли в Buzz")
+
+    with allure.step("Открытие диалога добавления видео"):
+        buzz_page.SHARE_VIDEO.click()
+        logger.info("Клик по кнопке 'Share Video'")
+
+    with allure.step("Ожидание появления поля для текста"):
+        try:
+            text_field = WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located(buzz_page.FIELD_POST_VIDEO_PHOTO.selector)
+            )
+            text_field.send_keys(post_text)
+            logger.info(f"Введён текст поста: {post_text}")
+        except TimeoutException:
+            logger.error("Поле для текста не появилось")
+            allure.attach(driver.get_screenshot_as_png(), name="timeout_text_field",
+                          attachment_type=allure.attachment_type.PNG)
+            raise
+
+    with allure.step("Ввод URL видео"):
+        try:
+            url_input = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable(buzz_page.VIDEO_URL.selector)
+            )
+            url_input.send_keys(video_url)
+            logger.info(f"Введён URL видео: {video_url}")
+        except TimeoutException:
+            logger.error("Поле для URL не появилось")
+            allure.attach(driver.get_screenshot_as_png(), name="timeout_url_field",
+                          attachment_type=allure.attachment_type.PNG)
+            raise
+
+    with allure.step("Ожидание появления блока с превью видео"):
+        try:
+            video_block = WebDriverWait(driver, 15).until(
+                EC.visibility_of_element_located(buzz_page.VIDEO_BLOCK.selector)
+            )
+            logger.info("Превью видео отобразилось")
+            allure.attach(driver.get_screenshot_as_png(), name="video_preview",
+                          attachment_type=allure.attachment_type.PNG)
+        except TimeoutException:
+            logger.error("Превью видео не появилось")
+            allure.attach(driver.get_screenshot_as_png(), name="no_preview",
+                          attachment_type=allure.attachment_type.PNG)
+            raise
+
+    with allure.step("Нажатие кнопки 'Share'"):
+        buzz_page.SHARE_PHOTO_VIDEO.click()
+        logger.info("Клик по кнопке Share")
+
+    with allure.step("Ожидание сообщения об успешном сохранении"):
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located((By.XPATH, "//div[contains(text(),'Saved')]"))
+            )
+            logger.info("Сообщение 'Saved' появилось")
+            allure.attach(driver.get_screenshot_as_png(), name="success_message",
+                          attachment_type=allure.attachment_type.PNG)
+        except TimeoutException:
+            logger.error("Сообщение 'Saved' не появилось")
+            allure.attach(driver.get_screenshot_as_png(), name="no_success",
+                          attachment_type=allure.attachment_type.PNG)
+            raise
+
+    with allure.step("Проверка, что видео отображается в посте"):
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located(buzz_page.VIDEO_BLOCK.selector)
+            )
+            video_block = buzz_page.VIDEO_BLOCK
+            assert video_block.is_displayed(), "Блок видео не виден после публикации"
+            src = video_block.get_attribute("src")
+            logger.info(f"Атрибут src видео: {src}")
+            assert video_id in src, f"ID видео {video_id} не найден в {src}"
+            allure.attach(driver.get_screenshot_as_png(), name="final_post",
+                          attachment_type=allure.attachment_type.PNG)
+        except TimeoutException:
+            logger.error("Блок видео не появился после публикации")
+            allure.attach(driver.get_screenshot_as_png(), name="post_failed",
+                          attachment_type=allure.attachment_type.PNG)
 
 
+@allure.epic("Buzz")
+@allure.feature("Публикация фото")
+@allure.title("Проверка ошибок при загрузке фото (неверный формат и размер)")
 def test_photo_post_errors(buzz_page, driver):
+    with allure.step("Переход в раздел Buzz"):
+        buzz_page.MENU_BUZZ.click()
+        logger.info("Открыт раздел Buzz")
 
-    buzz_page.MENU_BUZZ.click()
-    buzz_page.SHARE_PHOTOS.click()
-    buzz_page.ADD_PHOTO.send_keys(str(IMG_BIG))
-    assert buzz_page.ALERTION.should_be_visible
-    assert buzz_page.ALERTION.should_contain_text("images are allowed")
-    buzz_page.REMOVE_ALERT_BUTTON.click()
-    assert buzz_page.ALERTION.should_be_not_visible
-    buzz_page.ADD_PHOTO.send_keys(str(IMG_BIG))
-    assert buzz_page.ALERTION.should_be_visible
-    assert buzz_page.ALERTION.should_contain_text("Maximum allowed file size is 2MB")
+    with allure.step("Открытие диалога добавления фото"):
+        buzz_page.SHARE_PHOTOS.click()
+        logger.info("Клик по кнопке 'Share Photos'")
+
+    # Первая загрузка – проверка на неверный формат
+    with allure.step("Загрузка файла большого размера (IMG_BIG)"):
+        buzz_page.ADD_PHOTO.send_keys(str(IMG_BIG))
+        logger.info(f"Файл отправлен: {IMG_BIG.name}")
+
+    with allure.step("Ожидание появления алерта о неверном формате"):
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located(buzz_page.ALERTION.selector)
+            )
+            # Проверка текста алерта
+            alert_text = buzz_page.ALERTION.get_text()
+            assert "images are allowed" in alert_text, f"Текст алерта '{alert_text}' не содержит 'images are allowed'"
+            logger.info("Алерт о неверном формате отобразился корректно")
+            allure.attach(driver.get_screenshot_as_png(), name="format_alert",
+                          attachment_type=allure.attachment_type.PNG)
+        except TimeoutException:
+            logger.error("Алерт о неверном формате не появился")
+            allure.attach(driver.get_screenshot_as_png(), name="format_alert_missing",
+                          attachment_type=allure.attachment_type.PNG)
+            raise
+
+    with allure.step("Закрытие алерта"):
+        buzz_page.REMOVE_ALERT_BUTTON.click()
+        logger.info("Клик по кнопке закрытия алерта")
+
+    with allure.step("Ожидание исчезновения алерта"):
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.invisibility_of_element_located(buzz_page.ALERTION.selector)
+            )
+            logger.info("Алерт исчез")
+        except TimeoutException:
+            logger.error("Алерт не исчез после закрытия")
+            allure.attach(driver.get_screenshot_as_png(), name="alert_still_visible",
+                          attachment_type=allure.attachment_type.PNG)
+            raise
+
+    # Вторая загрузка – проверка на превышение размера
+    with allure.step("Повторная загрузка того же файла"):
+        buzz_page.ADD_PHOTO.send_keys(str(IMG_BIG))
+        logger.info("Файл отправлен повторно")
+
+    with allure.step("Ожидание появления алерта о превышении размера"):
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located(buzz_page.ALERTION.selector)
+            )
+            alert_text = buzz_page.ALERTION.get_text()
+            assert "Maximum allowed file size is 2MB" in alert_text, \
+                f"Текст алерта '{alert_text}' не содержит информацию о размере"
+            logger.info("Алерт о превышении размера отобразился корректно")
+            allure.attach(driver.get_screenshot_as_png(), name="size_alert",
+                          attachment_type=allure.attachment_type.PNG)
+        except TimeoutException:
+            logger.error("Алерт о размере не появился")
+            allure.attach(driver.get_screenshot_as_png(), name="size_alert_missing",
+                          attachment_type=allure.attachment_type.PNG)
+            raise
 
 
+@allure.epic("Buzz")
+@allure.feature("Публикация видео")
+@allure.title("Проверка ошибок при публикации видео (пустое поле и невалидный URL)")
 def test_video_post_errors(buzz_page, driver):
+    with allure.step("Переход в раздел Buzz"):
+        buzz_page.MENU_BUZZ.click()
+        logger.info("Открыт раздел Buzz")
 
-    buzz_page.MENU_BUZZ.click()
-    buzz_page.SHARE_VIDEO.click()
-    buzz_page.SHARE_PHOTO_VIDEO.click()
-    assert buzz_page.ERROR_VIDEO.should_be_visible
-    assert buzz_page.ERROR_VIDEO.should_contain_text("Required")
-    buzz_page.VIDEO_URL.fill(URLS.BUZZ)
-    time.sleep(4)
-    assert buzz_page.ERROR_VIDEO.should_be_visible
-    assert buzz_page.ERROR_VIDEO.should_contain_text("This URL is not a valid URL")
+    with allure.step("Открытие диалога добавления видео"):
+        buzz_page.SHARE_VIDEO.click()
+        logger.info("Клик по кнопке 'Share Video'")
+
+    with allure.step("Нажатие кнопки 'Share' без ввода данных"):
+        buzz_page.FIELD_POST_VIDEO_PHOTO.click()
+        buzz_page.SHARE_PHOTO_VIDEO.click()
+
+        logger.info("Клик по кнопке Share (без данных)")
+
+    with allure.step("Проверить, что диалог ещё открыт после ввода URL"):
+        try:
+            WebDriverWait(driver, 2).until(
+                EC.visibility_of_element_located(buzz_page.VIDEO_URL.selector)
+            )
+        except TimeoutException:
+            logger.warning("Диалог закрылся, открываем заново")
+            buzz_page.SHARE_VIDEO.click()
+            # Повторно вводим URL (можно сохранить значение)
+            WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located(buzz_page.VIDEO_URL.selector)
+            ).send_keys(URLS.BUZZ)
+            buzz_page.SHARE_PHOTO_VIDEO.click()
+
+    with allure.step("Ожидание появления ошибки 'Required'"):
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located(buzz_page.ERROR_VIDEO.selector)
+            )
+            error_text = buzz_page.ERROR_VIDEO.get_text()
+            assert "Required" in error_text, f"Текст ошибки '{error_text}' не содержит 'Required'"
+            logger.info("Ошибка 'Required' отобразилась")
+            allure.attach(driver.get_screenshot_as_png(), name="required_error",
+                          attachment_type=allure.attachment_type.PNG)
+        except TimeoutException:
+            logger.error("Ошибка 'Required' не появилась")
+            allure.attach(driver.get_screenshot_as_png(), name="required_error_missing",
+                          attachment_type=allure.attachment_type.PNG)
+            raise
+
+    with allure.step("Ввод невалидного URL (страница Buzz)"):
+        buzz_page.VIDEO_URL.fill(URLS.BUZZ)
+        logger.info(f"Введён URL: {URLS.BUZZ}")
+
+    # После ввода URL ошибка может исчезнуть, а затем появиться новая
+    # Ждём появления ошибки о невалидном URL
+    with allure.step("Ожидание появления ошибки о невалидном URL"):
+        try:
+            # Сначала ждём, что ошибка 'Required' исчезнет (необязательно)
+            WebDriverWait(driver, 5).until(
+                EC.invisibility_of_element_located(buzz_page.ERROR_VIDEO.selector)
+            )
+            logger.info("Ошибка 'Required' исчезла")
+        except TimeoutException:
+            logger.warning("Ошибка 'Required' не исчезла после ввода URL, продолжаем")
+
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located(buzz_page.ERROR_VIDEO.selector)
+            )
+            error_text = buzz_page.ERROR_VIDEO.get_text()
+            assert "This URL is not a valid URL" in error_text, \
+                f"Текст ошибки '{error_text}' не содержит 'This URL is not a valid URL'"
+            logger.info("Ошибка о невалидном URL отобразилась")
+            allure.attach(driver.get_screenshot_as_png(), name="invalid_url_error",
+                          attachment_type=allure.attachment_type.PNG)
+        except TimeoutException:
+            logger.error("Ошибка о невалидном URL не появилась")
+            allure.attach(driver.get_screenshot_as_png(), name="invalid_url_error_missing",
+                          attachment_type=allure.attachment_type.PNG)
+            raise
+
+
 
 

@@ -29,11 +29,13 @@ def test_directory_page(directory_page, driver):
         directory_page.check_that_page_opened()
         current_url = directory_page.driver.current_url
         logger.info(f"Текущий URL: {current_url}")
+
         allure.attach(
             driver.get_screenshot_as_png(),
             name="directory_page_opened",
             attachment_type=allure.attachment_type.PNG,
         )
+
         assert current_url == URLS.DIRECTORY
         logger.info("✓ URL страницы Directory корректен")
 

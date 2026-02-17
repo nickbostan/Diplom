@@ -12,7 +12,7 @@ index_job = random.randint(2, 28)
 index_unit = random.randint(2, 13)
 
 
-class PIMPage(BasePage):
+class PIMPage(BasePage, BaseElement):
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -21,7 +21,7 @@ class PIMPage(BasePage):
             driver, (By.CLASS_NAME, "oxd-topbar-header-breadcrumb")
         )
         self.PAGE_TITLE = BaseElement(
-            driver, (By.CLASS_NAME, "oxd-text oxd-text--h5 oxd-table-filter-title")
+            driver, (By.CLASS_NAME, "oxd-table-filter-title")
         )
         self.MENU_PIM = BaseElement(
             driver, (By.XPATH, "//a[contains(@href, '/pim/viewPimModule')]")
@@ -81,35 +81,30 @@ class PIMPage(BasePage):
             driver, (By.XPATH, "(//div[@class='oxd-table-cell'])[1]")
         )
         self.DEL_FIRST = BaseElement(
-            driver, (By.XPATH, "(//button[@type='button'])[7]")
+            driver, (By.XPATH, "//button[.//i[contains(@class, 'bi-trash')]]")
         )
         self.REDACT_FIRST = BaseElement(
-            driver, (By.XPATH, "(//button[@type='button'])[6]")
+            driver, (By.XPATH, "//button[.//i[contains(@class, 'bi-pencil-fill')]]")
         )
         self.DEL_SECOND = BaseElement(
-            driver, (By.XPATH, "(//button[@type='button'])[9]")
+            driver, (By.XPATH, "(//button[.//i[contains(@class, 'bi-trash')]])[2]")
         )
         self.REDACT_SECOND = BaseElement(
-            driver, (By.XPATH, "(//button[@type='button'])[8]")
+            driver, (By.XPATH, "(//button[.//i[contains(@class, 'bi-pencil-fill')]])[2]")
         )
         # Чекбоксы
         self.GENERAL_CHECK = BaseElement(
-            driver, (By.XPATH, "(//span[@class='--label-right'])")
+            driver, (By.XPATH, "(//span[contains(@class, '--label-right')])")
         )
         self.FIRST_CHECK = BaseElement(
-            driver, (By.XPATH, "(//span[@class='--label-right'])[2]")
+            driver, (By.XPATH, "(//span[contains(@class, '--label-right')])[2]")
         )
         self.SECOND_CHECK = BaseElement(
-            driver, (By.XPATH, "(//span[@class='--label-right'])[3]")
+            driver, (By.XPATH, "(//span[contains(@class, '--label-right'))[3]")
         )
         # Счетчик выбранных элемнетов
-        self.COUNT = BaseElement(
-            driver,
-            (
-                By.XPATH,
-                "(//span[contains(@class, 'oxd-text--span') and contains(text(), 'Records Found')])",
-            ),
-        )
+        self.COUNT = BaseElement(driver, (By.XPATH,
+                                          "(//span[contains(@class, 'oxd-text--span')])[13]"))
         # Удаление выбранных элементов
         self.DELETE_BUTTON = BaseElement(
             driver, (By.XPATH, "(//button[@class='oxd-button--label-danger'])")
@@ -123,25 +118,25 @@ class PIMPage(BasePage):
         )
         # Сортировка таблицы
         self.SORT_ID = BaseElement(
-            driver, (By.XPATH, "(//i[@class='oxd-table-header-sort-icon'])")
+            driver, (By.XPATH, "(//i[contains(@class, 'oxd-table-header-sort-icon')])")
         )
         self.SORT_FIRST_NAME = BaseElement(
-            driver, (By.XPATH, "(//i[@class='oxd-table-header-sort-icon'])[2]")
+            driver, (By.XPATH, "(//i[contains(@class, 'oxd-table-header-sort-icon')])[2]")
         )
         self.SORT_LAST_NAME = BaseElement(
-            driver, (By.XPATH, "(//i[@class='oxd-table-header-sort-icon'])[3]")
+            driver, (By.XPATH, "(//i[contains(@class, 'oxd-table-header-sort-icon')])[3]")
         )
         self.SORT_JOB_TITLE = BaseElement(
-            driver, (By.XPATH, "(//i[@class='oxd-table-header-sort-icon'])[4]")
+            driver, (By.XPATH, "(//i[contains(@class, 'oxd-table-header-sort-icon')])[4]")
         )
         self.SORT_STATUS = BaseElement(
-            driver, (By.XPATH, "(//i[@class='oxd-table-header-sort-icon'])[5]")
+            driver, (By.XPATH, "(//i[contains(@class, 'oxd-table-header-sort-icon')])[5]")
         )
         self.SORT_SUB_UNIT = BaseElement(
-            driver, (By.XPATH, "(//i[@class='oxd-table-header-sort-icon'])[6]")
+            driver, (By.XPATH, "(//i[contains(@class, 'oxd-table-header-sort-icon')])[6]")
         )
         self.SORT_SUPERVISOR = BaseElement(
-            driver, (By.XPATH, "(//i[@class='oxd-table-header-sort-icon'])[7]")
+            driver, (By.XPATH, "(//i[contains(@class, 'oxd-table-header-sort-icon')])[7]")
         )
         # Тип сортировки
         self.SORT_BY_ASCENDING = BaseElement(
