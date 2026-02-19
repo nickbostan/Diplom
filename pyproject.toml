@@ -1,0 +1,35 @@
+[tool.black]
+line-length = 88
+target-version = ['py311']
+exclude = '''
+/(
+    \.venv
+  | venv
+  | env
+  | .git
+  | __pycache__
+  | allure-results
+  | allure-report
+  | .pytest_cache
+  | node_modules
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip = [
+    "venv",
+    ".venv",
+    "env",
+    ".git",
+    "__pycache__",
+    "allure-results",
+    "allure-report",
+    ".pytest_cache",
+    "node_modules"
+]
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]

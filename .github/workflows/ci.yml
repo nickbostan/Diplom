@@ -1,0 +1,71 @@
+name: CI – Run Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+      fail-fast: false
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🌐 Install Chrome and Firefox (and drivers)
+        run: |
+          # Установка Chrome
+          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+          # Установка Firefox
+          sudo apt-get install -y firefox
+
+          # Selenium Manager автоматически загрузит драйверы, ничего дополнительно не нужно
+
+      - name: 🧪 Run tests (${{ matrix.browser }})
+        env:
+          # Передаём логин/пароль из секретов GitHub (если нужны)
+          LOGIN: ${{ secrets.ADMIN_LOGIN }}
+          PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          pytest -v \
+            --selenium-browser=${{ matrix.browser }} \
+            --alluredir=allure-results \
+            --env=test_pages   # или другой ваш параметр
+
+      - name: 📎 Upload Allure results
+        if: always()                     # загружаем даже при падении тестов
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.browser }}
+          path: allure-results/
+
+      - name: 📎 Upload logs and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs-${{ matrix.browser }}
+          path: |
+            test_logs/
+            screenshots/
