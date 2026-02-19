@@ -50,7 +50,7 @@ jobs:
           PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
         run: |
           pytest -v \
-            --browser=${{ matrix.browser }} \
+            --selenium-browser=${{ matrix.browser }} \
             --alluredir=allure-results \
             --env=test_pages   # или другой ваш параметр
 
