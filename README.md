@@ -165,35 +165,35 @@ allure generate allure-results -o allure-report --clean
 allure open allure-report
 ```
 
-📁 Структура проекта
+## 📁 Структура проекта
 Diplom/
-├── .github
-├── .venv
-├── allure-results
+├── .github/
+├── .venv/
+├── allure-results/
 ├── Diplom/
-│   ├── core/
-│   │   ├── base_element.py
-│   │   ├── base_page.py
-│   │   ├── api_service.py
-│   ├── files
-│   ├── page_obj/
-│   │   ├── dashboard_page.py
-│   │   ├── login_page.py
-│   │   ├── .....
-│   ├── test
-│   │   ├──test_api
-│   │   ├──test_cookies
-│   │   ├──test_pages
-│   │   │   ├── test_dashboard.py
-│   │   │   ├── test_login.py
-│   ├── urls.py
+│ ├── core/
+│ │ ├── base_element.py
+│ │ ├── base_page.py
+│ │ └── api_service.py
+│ ├── files/
+│ ├── page_obj/
+│ │ ├── dashboard_page.py
+│ │ ├── login_page.py
+│ │ └── ...
+│ ├── test/
+│ │ ├── test_api/
+│ │ ├── test_cookies/
+│ │ └── test_pages/
+│ │ ├── test_dashboard.py
+│ │ └── test_login.py
+│ └── urls.py
 ├── requirements.txt
 ├── conftest.py
-├── .gitignore   
-├── README.md   
-├── pyproject.toml)
+├── .gitignore
+├── README.md
+├── pyproject.toml
 ├── Dockerfile
 ├── docker-compose.grid.yml
 ├── .pre-commit-config.yaml
 ├── .flake8
-├── test_logs
+└── test_logs/
