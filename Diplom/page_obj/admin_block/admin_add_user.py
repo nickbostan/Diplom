@@ -50,9 +50,6 @@ class AdminAddPage(BasePage, BaseElement):
         self.INPUT_PASSWORD = BaseElement(
             driver, (By.XPATH, "//input[@type='password']")
         )
-        self.TABLE = BaseElement(
-            driver, (By.XPATH, "//div[@row-decorator()='oxd-table-decorator-card']")
-        )
         self.INPUT_CONF_PASSWORD = BaseElement(
             driver, (By.XPATH, "(//input[@type='password'])[2]")
         )

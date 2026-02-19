@@ -59,6 +59,9 @@ class AdminPage(BasePage):
         self.USERNAME_SEARCH = BaseElement(
             driver, (By.XPATH, "//label[text()='Username']/following::input[1]")
         )
+        self.TABLE = BaseElement(
+            driver, (By.XPATH, "//div[@row-decorator()='oxd-table-decorator-card']")
+        )
         # Фильтры поиска
         self.MAIN_FILTER = BaseElement(
             driver, (By.XPATH, "(//button[@type='button'])[4]")

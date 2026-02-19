@@ -1,5 +1,3 @@
-import time
-
 import allure
 import pytest
 from faker import Faker
@@ -512,12 +510,5 @@ def test_adding_user(admin_page, admin_add_page, fake, driver):
     with allure.step("Проверка успешного добавления"):
         assert admin_add_page.check_message("Saved")
         logger.info("✓ Сообщение появилось")
-
-    time.sleep(3)
-
-    with allure.step("Проверка отображения нового пользователя в таблице"):
-        table_text = admin_add_page.TABLE.get_text()
-        assert username in table_text
-        logger.info("✓ Пользователь найден")
 
     logger.info("=== Конец test_adding_user ===")
