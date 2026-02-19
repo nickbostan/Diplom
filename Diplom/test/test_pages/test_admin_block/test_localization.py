@@ -1,14 +1,16 @@
 import time
-import pytest
+
 import allure
+import pytest
+from selenium.common.exceptions import (
+    ElementNotInteractableException,
+    NoSuchElementException,
+)
 
 from conftest import logger
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 from Diplom.page_obj.admin_block.localization import LocalizationPage
 from Diplom.page_obj.login_page import LoginPage
 from Diplom.urls import URLS
-
-
 
 
 @pytest.fixture(scope="function")
@@ -18,7 +20,6 @@ def localization_page(driver):
     login_page.login("Admin", "admin123")
 
     return LocalizationPage(driver)
-
 
 
 @allure.epic("Страница локализации")

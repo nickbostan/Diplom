@@ -1,5 +1,5 @@
-import pytest
 import allure
+import pytest
 
 from conftest import logger
 from Diplom.page_obj.directory_page import DirectoryPage

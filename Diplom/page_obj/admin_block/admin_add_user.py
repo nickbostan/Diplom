@@ -6,7 +6,7 @@ from Diplom.core.base_element import BaseElement
 from Diplom.core.base_page import BasePage
 
 
-class AdminAddPage(BasePage):
+class AdminAddPage(BasePage, BaseElement):
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -22,19 +22,17 @@ class AdminAddPage(BasePage):
             driver, (By.XPATH, "(//div[@class='oxd-select-text-input'])[1]")
         )
         self.ROLE_ADMIN = BaseElement(
-            driver, (By.XPATH, f".//*[contains(text(), 'Admin')]")
+            driver, (By.XPATH, ".//*[contains(text(), 'Admin')]")
         )
-        self.ROLE_ESS = BaseElement(
-            driver, (By.XPATH, f".//*[contains(text(), 'ESS')]")
-        )
+        self.ROLE_ESS = BaseElement(driver, (By.XPATH, ".//*[contains(text(), 'ESS')]"))
         self.STATUS = BaseElement(
             driver, (By.XPATH, "(//div[@class='oxd-select-text-input'])[2]")
         )
         self.STATUS_ENABLED = BaseElement(
-            driver, (By.XPATH, f".//*[contains(text(), 'Enabled')]")
+            driver, (By.XPATH, ".//*[contains(text(), 'Enabled')]")
         )
         self.STATUS_DISABLED = BaseElement(
-            driver, (By.XPATH, f".//*[contains(text(), 'Disabled')]")
+            driver, (By.XPATH, ".//*[contains(text(), 'Disabled')]")
         )
         self.INPUT_EMPLOYEE_NAME = BaseElement(
             driver, (By.XPATH, "//input[@placeholder='Type for hints...']")

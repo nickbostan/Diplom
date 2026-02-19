@@ -1,5 +1,5 @@
-import pytest
 import allure
+import pytest
 
 from conftest import logger
 from Diplom.page_obj.claim_page import ClaimPage
@@ -130,9 +130,9 @@ def test_search_fields_and_reset(claim_page, driver):
         )
 
     with allure.step("Проверить значения полей после ввода"):
-        ids = claim_page.REFERENCE_ID.get_attribute('value')
+        ids = claim_page.REFERENCE_ID.get_attribute("value")
         status = claim_page.STATUS_DROPDOWN.get_text()
-        to_date = claim_page.TO_DATE.get_attribute('value')
+        to_date = claim_page.TO_DATE.get_attribute("value")
         logger.info(f"Reference ID: {ids}, Status: {status}, To Date: {to_date}")
 
         assert ids == "1234"
@@ -165,10 +165,12 @@ def test_search_fields_and_reset(claim_page, driver):
         )
 
     with allure.step("Проверить значения полей после сброса"):
-        new_id = claim_page.REFERENCE_ID.get_attribute('value')
+        new_id = claim_page.REFERENCE_ID.get_attribute("value")
         new_status = claim_page.STATUS_DROPDOWN.get_text()
-        new_date = claim_page.TO_DATE.get_attribute('value')
-        logger.info(f"После сброса: Reference ID: {new_id}, Status: {new_status}, To Date: {new_date}")
+        new_date = claim_page.TO_DATE.get_attribute("value")
+        logger.info(
+            f"После сброса: Reference ID: {new_id}, Status: {new_status}, To Date: {new_date}"
+        )
 
         assert new_id == "1234"  # поле Reference Id остается статичным даже после reset
         assert new_status == "-- Select --"

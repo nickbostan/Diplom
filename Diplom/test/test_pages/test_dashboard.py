@@ -1,5 +1,3 @@
-import time
-
 import allure
 import pytest
 
@@ -84,7 +82,7 @@ def test_widget_links(dashboard_page, widget, expected_url, driver):
 
         assert url_matched, error_msg
 
-        logger.info(f"✓ Переход выполнен успешно")
+        logger.info("✓ Переход выполнен успешно")
 
     logger.info(f"=== Конец test_navigation_links: {widget} ===")
 
@@ -221,5 +219,3 @@ def test_search(dashboard_page, driver):
         logger.info("Все значения меню снова отображаются")
 
     logger.info("=== Конец test_search ===")
-
-

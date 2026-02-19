@@ -1,6 +1,7 @@
 import time
-import pytest
+
 import allure
+import pytest
 
 from conftest import logger
 from Diplom.page_obj.leave_page import LeavePage
@@ -114,7 +115,7 @@ def test_search_fields_and_reset(leave_page, driver):
         )
 
     with allure.step("Проверить значение поля Sub Unit и From date"):
-        from_date = leave_page.FROM_DATE.get_attribute('value')
+        from_date = leave_page.FROM_DATE.get_attribute("value")
         status = leave_page.SUB_UNIT_DROPDOWN.get_text()
         logger.info(f"Значения после поиска: {status} и {from_date}")
         assert from_date == "2016-02-05"
@@ -126,7 +127,7 @@ def test_search_fields_and_reset(leave_page, driver):
         logger.info("Кнопка Reset нажата")
 
     with allure.step("Проверить сброс"):
-        new_from_date = leave_page.FROM_DATE.get_attribute('value')
+        new_from_date = leave_page.FROM_DATE.get_attribute("value")
         new_status = leave_page.SUB_UNIT_DROPDOWN.get_text()
         logger.info(f"Значения после сброса: {new_status} и {new_from_date}")
         assert new_from_date == "2016-02-05"
@@ -143,9 +144,6 @@ def test_search_fields_and_reset(leave_page, driver):
        но почему-то значения остаются те же """
 
     logger.info("=== Конец test_search_fields_and_reset ===")
-
-
-
 
 
 @allure.epic("Страница Leave")
@@ -199,7 +197,9 @@ def test_show_leave_dropdown(leave_page, driver):
 
     time.sleep(3)
 
-    with allure.step("Открыть выпадающий список и проверить состояние опции 'Rejected'"):
+    with allure.step(
+        "Открыть выпадающий список и проверить состояние опции 'Rejected'"
+    ):
         leave_page.SHOW_LEAVES_DROPDOWN.click()
         rejected_option = leave_page.REJECTED_OPTION
 
@@ -207,8 +207,9 @@ def test_show_leave_dropdown(leave_page, driver):
             logger.info("Опция 'Rejected' неактивна (disabled)")
         else:
             class_attr = rejected_option.get_attribute("class")
-            assert "selected" in class_attr or "oxd-select-option --selected" in class_attr, \
-                f"Опция должна быть отмечена как выбранная, класс: {class_attr}"
+            assert (
+                "selected" in class_attr or "oxd-select-option --selected" in class_attr
+            ), f"Опция должна быть отмечена как выбранная, класс: {class_attr}"
             logger.info("Опция 'Rejected' имеет класс selected")
 
         allure.attach(

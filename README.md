@@ -71,8 +71,11 @@ pytest -m smoke
 # Запуск с подробным выводом
 pytest -v
 
+# Запуск с перезапуском упавших тестов
+pytest --reruns 2 --reruns-delay 1
+
 # Запуск конкретного теста
-pytest Diplom/test_pages/test_login.py::test_positive_login
+pytest Diplom/test/test_pages/test_login.py::test_positive_login
 
 # Запуск на разных браузерах
 pytest # тут по умолчанию Chrome
@@ -107,7 +110,7 @@ docker-compose -f docker-compose.grid.yml ps
 docker-compose -f docker-compose.grid.yml down -v
 
 # Запуск конкретного теста
-docker-compose -f docker-compose.grid.yml run --rm tests pytest tests/test_dashboard.py::test_search 
+docker-compose -f docker-compose.grid.yml run --rm tests pytest test/test_pages/test_dashboard.py::test_search 
 -v --selenium-browser=chrome --remote-url=http://selenium-hub:4444/wd/hub
 
 # Прогон тестов с пометками
@@ -137,6 +140,7 @@ allure open allure-report
 
 ## 🎯 API блок
 Интеграция API тестов для системы OrangeHRM с поддержкой основных CRUD операций.
+Но к сожалению не удалось извлечь CSFR токен для запуска тестов
 
 ## 📊 Поддерживаемые операции
 
@@ -163,19 +167,33 @@ allure open allure-report
 
 📁 Структура проекта
 Diplom/
+├── .github
+├── .venv
+├── allure-results
 ├── Diplom/
 │   ├── core/
 │   │   ├── base_element.py
 │   │   ├── base_page.py
+│   │   ├── api_service.py
+│   ├── files
 │   ├── page_obj/
 │   │   ├── dashboard_page.py
 │   │   ├── login_page.py
-│   ├── test_pages/   (или tests)
-│   │   ├── test_dashboard.py
-│   │   ├── conftest.py?  # но conftest обычно в корне или в tests/
+│   │   ├── .....
+│   ├── test
+│   │   ├──test_api
+│   │   ├──test_cookies
+│   │   ├──test_pages
+│   │   │   ├── test_dashboard.py
+│   │   │   ├── test_login.py
 │   ├── urls.py
 ├── requirements.txt
 ├── conftest.py
 ├── .gitignore   
-├── conftest.py   
-├── conftest.py   
+├── README.md   
+├── pyproject.toml)
+├── Dockerfile
+├── docker-compose.grid.yml
+├── .pre-commit-config.yaml
+├── .flake8
+├── test_logs

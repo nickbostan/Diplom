@@ -1,13 +1,13 @@
 import time
-from selenium.webdriver.support import expected_conditions as EC
 
-import pytest
 import allure
+import pytest
+from faker import Faker
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from conftest import logger
-from faker import Faker
-from Diplom.files import  IMG_2
+from Diplom.files import IMG_2
 from Diplom.page_obj.login_page import LoginPage
 from Diplom.page_obj.my_info_page import MyInfoPage
 from Diplom.urls import URLS
@@ -25,7 +25,6 @@ def my_info_page(driver):
 @pytest.fixture
 def fake():
     return Faker()
-
 
 
 @allure.epic("Страница My Info")
@@ -136,7 +135,6 @@ def test_delete_attach(my_info_page, driver):
     logger.info("=== Конец test_delete_attach ===")
 
 
-
 @allure.epic("Страница  My Info")
 @allure.title("Скачивание файла")
 def test_download_attachment(my_info_page, driver, tmp_path):
@@ -158,7 +156,9 @@ def test_download_attachment(my_info_page, driver, tmp_path):
             attachment_type=allure.attachment_type.PNG,
         )
 
-    with allure.step("Обработать всплывающее окно подтверждения, если оно все же всплыло"):
+    with allure.step(
+        "Обработать всплывающее окно подтверждения, если оно все же всплыло"
+    ):
         try:
             WebDriverWait(driver, 5).until(EC.alert_is_present())
             alert = driver.switch_to.alert
@@ -167,15 +167,23 @@ def test_download_attachment(my_info_page, driver, tmp_path):
             alert.accept()
             logger.info("Подтверждение принято")
         except Exception as e:
-            logger.warning(f"Окно подтверждения не появилось или не удалось обработать: {e}")
+            logger.warning(
+                f"Окно подтверждения не появилось или не удалось обработать: {e}"
+            )
 
     with allure.step("Проверить, что файл скачался"):
 
         downloaded_file = my_info_page.wait_for_file_download(tmp_path, timeout=30)
-        assert downloaded_file is not None, "Файл не был скачан в течение ожидаемого времени"
+        assert (
+            downloaded_file is not None
+        ), "Файл не был скачан в течение ожидаемого времени"
         logger.info(f"Файл скачан: {downloaded_file}")
 
-        allure.attach.file(str(downloaded_file), name="downloaded_file", attachment_type=allure.attachment_type.TEXT)
+        allure.attach.file(
+            str(downloaded_file),
+            name="downloaded_file",
+            attachment_type=allure.attachment_type.TEXT,
+        )
 
         file_size = downloaded_file.stat().st_size
         logger.info(f"Размер файла: {file_size} байт")
@@ -202,14 +210,21 @@ def test_main_fields(my_info_page, driver, fake):
         other_id = fake.passport_number()
         drivers_license = fake.license_plate()
         license_expire = fake.date(pattern="%Y-%d-%m")
-        date_birth = fake.date_of_birth(minimum_age=21, maximum_age=50).strftime("%Y-%d-%m")
-        logger.info(f"Сгенерированы случайные данные")
+        date_birth = fake.date_of_birth(minimum_age=21, maximum_age=50).strftime(
+            "%Y-%d-%m"
+        )
+        logger.info("Сгенерированы случайные данные")
 
     with allure.step("Заполнить все поля через update_info"):
         my_info_page.update_info(
-            first_name, middle_name, last_name,
-            ids, other_id, drivers_license,
-            license_expire, date_birth
+            first_name,
+            middle_name,
+            last_name,
+            ids,
+            other_id,
+            drivers_license,
+            license_expire,
+            date_birth,
         )
         logger.info("Все поля заполнены")
 

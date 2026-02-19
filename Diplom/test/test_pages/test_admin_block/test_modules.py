@@ -1,9 +1,13 @@
 import time
-import pytest
+
 import allure
+import pytest
+from selenium.common.exceptions import (
+    ElementNotInteractableException,
+    NoSuchElementException,
+)
 
 from conftest import logger
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 from Diplom.page_obj.admin_block.modules_page import ModulesPage
 from Diplom.page_obj.login_page import LoginPage
 from Diplom.urls import URLS
@@ -16,7 +20,6 @@ def modules_page(driver):
     login_page.login("Admin", "admin123")
 
     return ModulesPage(driver)
-
 
 
 @allure.epic("Страница модулей")
@@ -49,6 +52,7 @@ def test_modules_page(modules_page, driver):
 @allure.epic("Страница модулей")
 @allure.feature("Выключение модулей")
 @allure.title("Переключение всех модулей и проверка сохранения")
+@pytest.mark.run(order=666)
 def test_modules_switch(modules_page, driver):
     logger.info("=== Начало test_modules_switch ===")
     with allure.step("Открыть страницу модулей"):
@@ -61,6 +65,8 @@ def test_modules_switch(modules_page, driver):
         modules_page.MODULES.click()
 
     with allure.step("Переключить все модули и сохранить"):
+        modules_page.check_that_page_opened()
+        time.sleep(3)
         modules_page.all_modules_switch()
         modules_page.SAVE_BUTTON.click()
         assert modules_page.check_message("Saved")
@@ -76,6 +82,7 @@ def test_modules_switch(modules_page, driver):
 
     with allure.step("Обновить страницу и проверить, что модули отключены"):
         driver.refresh()
+        time.sleep(2)
         modules_page.check_modules_off()
         logger.info("✓ Все модули отключены")
 

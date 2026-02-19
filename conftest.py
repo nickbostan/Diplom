@@ -1,14 +1,14 @@
 import logging
 import os
-import pytest
-
-
 from datetime import datetime
+
+import pytest
+from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.edge.options import Options as EdgeOptions
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 
 def pytest_addoption(parser):
@@ -31,12 +31,20 @@ def pytest_addoption(parser):
         default=None,
         help="Selenium Grid remote URL (e.g., http://selenium-hub:4444/wd/hub)",
     )
+    parser.addoption(
+        "--headed-mode",
+        action="store_true",
+        default=False,
+        help="Run browser in headed mode (with GUI)",
+    )
+
 
 @pytest.fixture(scope="function")
 def driver(request, tmp_path):
     browser = request.config.getoption("--selenium-browser")
     remote_url = request.config.getoption("--remote-url")
-    headless = True
+    headed = request.config.getoption("--headed-mode")
+    headless = not headed
 
     # Папка для загрузок – можно переопределить через переменную окружения
     download_dir = os.getenv("DOWNLOAD_DIR", str(tmp_path))
@@ -69,7 +77,7 @@ def driver(request, tmp_path):
         profile.set_preference("browser.download.manager.showWhenStarting", False)
         profile.set_preference(
             "browser.helperApps.neverAsk.saveToDisk",
-            "application/octet-stream,text/plain,application/pdf,application/zip"
+            "application/octet-stream,text/plain,application/pdf,application/zip",
         )
         profile.set_preference("pdfjs.disabled", True)
         opts.profile = profile
@@ -100,7 +108,6 @@ def driver(request, tmp_path):
     driver.quit()
 
 
-
 def create_logger():
     logger = logging.getLogger()
 
@@ -113,7 +120,7 @@ def create_logger():
         "INFO": logging.INFO,
         "WARNING": logging.WARNING,
         "ERROR": logging.ERROR,
-        "CRITICAL": logging.CRITICAL
+        "CRITICAL": logging.CRITICAL,
     }
 
     logger.setLevel(level_map.get(logger_level, logging.INFO))
@@ -128,22 +135,18 @@ def create_logger():
 
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S"
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
-
 
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(formatter)
 
-
-    file_handler = logging.FileHandler(log_file, encoding='utf-8')
+    file_handler = logging.FileHandler(log_file, encoding="utf-8")
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
 
-
     logger.handlers.clear()
-
 
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
@@ -156,9 +159,11 @@ def create_logger():
 
 logger = create_logger()
 
+
 def pytest_configure(config):
     allure_dir = "allure-results"
     os.makedirs(allure_dir, exist_ok=True)
+
 
 @pytest.fixture(scope="function")
 def log_test(request):
@@ -166,3 +171,17 @@ def log_test(request):
     logger.info(f"Starting test_pages: {test_name}")
     yield
     logger.info(f"Finished test_pages: {test_name}")
+
+
+@pytest.fixture
+def resized_image(tmp_path):
+    from Diplom.files import IMG_2
+
+    def _resize(width: int, height: int) -> str:
+        dest = tmp_path / f"img_{width}x{height}.jpg"
+        with Image.open(IMG_2) as img:
+            resized = img.resize((width, height))
+            resized.save(dest)
+        return str(dest)
+
+    return _resize

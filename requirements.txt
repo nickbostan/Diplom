@@ -10,6 +10,7 @@ playwright==1.58.0
 faker==40.4.0
 pytest-playwright-visual-snapshot==0.5.1
 pytest-repeat==0.9.4
+pytest-order==1.2
 pytest-rerunfailures==16.1.0
 pytest-xdist == 3.8.0
 requests==2.32.5

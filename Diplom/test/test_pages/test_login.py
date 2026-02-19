@@ -157,7 +157,7 @@ def test_negative_username(login_page, open_page, user, password, expect, driver
 @allure.feature("Авторизация")
 @allure.title("Пустые поля")
 def test_negative_empty_fields(login_page, open_page, user, password, expect, driver):
-    logger.info(f"=== Начало test_negative_empty_fields ===")
+    logger.info("=== Начало test_negative_empty_fields ===")
 
     with allure.step(f"Логин с пустым полем: {user or 'пусто'}/{password or 'пусто'}"):
         logger.info(f"Пустые поля: username='{user}', password='{password}'")
@@ -173,7 +173,7 @@ def test_negative_empty_fields(login_page, open_page, user, password, expect, dr
         login_page.check_that_empty_error_is_visible(expect)
         logger.info(f"✓ Проверена ошибка пустого поля: {expect}")
 
-    logger.info(f"=== Конец test_negative_empty_fields ===")
+    logger.info("=== Конец test_negative_empty_fields ===")
 
 
 @pytest.mark.parametrize(

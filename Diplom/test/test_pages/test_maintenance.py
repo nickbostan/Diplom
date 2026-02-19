@@ -1,9 +1,9 @@
-import pytest
 import allure
+import pytest
 
 from conftest import logger
-from Diplom.page_obj.maintenance_page import MaintenancePage
 from Diplom.page_obj.login_page import LoginPage
+from Diplom.page_obj.maintenance_page import MaintenancePage
 from Diplom.urls import URLS
 
 

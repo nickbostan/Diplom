@@ -61,7 +61,7 @@ class AdminPage(BasePage):
         )
         # Фильтры поиска
         self.MAIN_FILTER = BaseElement(
-            driver, (By.XPATH, "(//button[@type='button'][4]")
+            driver, (By.XPATH, "(//button[@type='button'])[4]")
         )
         self.USER_ROLE_DROPDOWN = BaseElement(
             driver,
@@ -79,31 +79,33 @@ class AdminPage(BasePage):
             driver, (By.CSS_SELECTOR, "button[type='submit']")
         )
         self.RESET_BUTTON = BaseElement(
-            driver, (By.XPATH, "(//button[@type='button'][5]")
+            driver, (By.XPATH, "(//button[@type='button'])[5]")
         )
         self.ADD_BUTTON = BaseElement(
             driver, (By.XPATH, "(//button[@type='button'])[6]")
         )
         # Действия с найденными карточками
-        self.DEL_FIRST = BaseElement(driver, (By.XPATH, "(//button[@type='button'][7]"))
+        self.DEL_FIRST = BaseElement(
+            driver, (By.XPATH, "(//button[@type='button'])[7]")
+        )
         self.REDACT_FIRST = BaseElement(
-            driver, (By.XPATH, "(//button[@type='button'][8]")
+            driver, (By.XPATH, "(//button[@type='button'])[8]")
         )
         self.DEL_SECOND = BaseElement(
-            driver, (By.XPATH, "(//button[@type='button'][9]")
+            driver, (By.XPATH, "(//button[@type='button'])[9]")
         )
         self.REDACT_SECOND = BaseElement(
-            driver, (By.XPATH, "(//button[@type='button'][10]")
+            driver, (By.XPATH, "(//button[@type='button'])[10]")
         )
         # Чекбоксы
         self.GENERAL_CHECK = BaseElement(
-            driver, (By.XPATH, "(//span[@class='--label-right'])")
+            driver, (By.XPATH, "(//span[contains(@class, '--label-right')])")
         )
         self.FIRST_CHECK = BaseElement(
-            driver, (By.XPATH, "(//span[@class='--label-right'])[2]")
+            driver, (By.XPATH, "(//span[contains(@class, '--label-right')])[2]")
         )
         self.SECOND_CHECK = BaseElement(
-            driver, (By.XPATH, "(//span[@class='--label-right'])[3]")
+            driver, (By.XPATH, "(//span[contains(@class, '--label-right')])[3]")
         )
         # Счетчик выбранных элементов
         self.COUNT = BaseElement(
@@ -146,7 +148,7 @@ class AdminPage(BasePage):
         self.QUALIFICATIONS.should_be_visible()
         self.MORE.should_be_visible()
         self.GENERAL_CHECK.should_be_visible()
-        self.FIRST_CHECK.should_be_visible()
+        self.FIRST_CHECK.should_be_not_visible()
         self.DEL_FIRST.should_be_visible()
         self.REDACT_FIRST.should_be_visible()
         self.PAGE_TITLE.should_be_visible()

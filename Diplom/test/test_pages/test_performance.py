@@ -1,9 +1,9 @@
-import pytest
 import allure
+import pytest
 
 from conftest import logger
-from Diplom.page_obj.performance_page import PerformancePage
 from Diplom.page_obj.login_page import LoginPage
+from Diplom.page_obj.performance_page import PerformancePage
 from Diplom.urls import URLS
 
 
@@ -113,7 +113,7 @@ def test_search_fields_and_reset(performance_page, driver):
         )
 
     with allure.step("Проверить значения полей после поиска"):
-        from_date = performance_page.FROM_DATE.get_attribute('value')
+        from_date = performance_page.FROM_DATE.get_attribute("value")
         status = performance_page.STATUS_DROPDOWN.get_text()
         logger.info(f"From Date: {from_date}, Status: {status}")
 
@@ -131,12 +131,14 @@ def test_search_fields_and_reset(performance_page, driver):
         )
 
     with allure.step("Проверить значения полей после сброса"):
-        new_from_date = performance_page.FROM_DATE.get_attribute('value')
+        new_from_date = performance_page.FROM_DATE.get_attribute("value")
         new_status = performance_page.STATUS_DROPDOWN.get_text()
         logger.info(f"После сброса: From Date: {new_from_date}, Status: {new_status}")
 
         assert new_status == "-- Select --"
-        assert new_from_date == "2026-01-01" # После reset ставиться дата на начало текущего года
+        assert (
+            new_from_date == "2026-01-01"
+        )  # После reset ставиться дата на начало текущего года
         logger.info("✓ Поля сброшены корректно (дата по умолчанию установлена)")
 
     logger.info("=== Конец test_search_fields_and_reset ===")

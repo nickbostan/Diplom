@@ -1,5 +1,5 @@
-import pytest
 import allure
+import pytest
 
 from conftest import logger
 from Diplom.page_obj.admin_block.add_job_title import AddJobTitlePage

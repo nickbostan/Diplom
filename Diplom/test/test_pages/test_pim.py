@@ -1,6 +1,7 @@
+import time
+
 import allure
 import pytest
-import time
 
 from conftest import logger
 from Diplom.page_obj.login_page import LoginPage
@@ -71,13 +72,17 @@ def test_fill_search_form(pim_page, driver):
 
         assert status not in bad_values_drop, f"Некорректное значение статуса: {status}"
         assert job not in bad_values_drop, f"Некорректное значение должности: {job}"
-        assert sub_unit not in bad_values_drop, f"Некорректное значение подразделения: {sub_unit}"
+        assert (
+            sub_unit not in bad_values_drop
+        ), f"Некорректное значение подразделения: {sub_unit}"
         logger.info("✓ Выпадающие списки заполнены корректно")
 
     with allure.step("Проверка поля 'Employee Name'"):
         employee_name = pim_page.EMPLOYEE_NAME.get_attribute("value")
         assert employee_name != "", "Поле имени сотрудника пустое"
-        assert employee_name == "dfdfewr", f"Ожидалось 'dfdfewr', получено '{employee_name}'"
+        assert (
+            employee_name == "dfdfewr"
+        ), f"Ожидалось 'dfdfewr', получено '{employee_name}'"
         logger.info(f"✓ Employee Name = '{employee_name}'")
 
     logger.info("=== Конец test_fill_search_form ===")
@@ -124,14 +129,18 @@ def test_reset_button(pim_page, driver):
         assert status in values_drop, f"Статус не сброшен: {status}"
         assert job in values_drop, f"Должность не сброшена: {job}"
         assert sub_unit in values_drop, f"Подразделение не сброшено: {sub_unit}"
-        assert include == "Current Employees Only", f"Поле Include не сброшено: {include}"
+        assert (
+            include == "Current Employees Only"
+        ), f"Поле Include не сброшено: {include}"
         logger.info("✓ Выпадающие списки сброшены корректно")
 
     with allure.step("Проверка текстовых полей после сброса"):
         employee_name = pim_page.EMPLOYEE_NAME.get_attribute("value")
         assert employee_name == "", f"Поле Employee Name не пусто: '{employee_name}'"
         employee_placeholder = pim_page.EMPLOYEE_NAME.get_attribute("placeholder")
-        assert employee_placeholder == "Type for hints...", f"Placeholder неверен: '{employee_placeholder}'"
+        assert (
+            employee_placeholder == "Type for hints..."
+        ), f"Placeholder неверен: '{employee_placeholder}'"
         employee_id = pim_page.EMPLOYEE_ID.get_attribute("value")
         assert employee_id == "", f"Поле Employee ID не пусто: '{employee_id}'"
         supervisor = pim_page.SUPERVISOR_NAME.get_attribute("value")

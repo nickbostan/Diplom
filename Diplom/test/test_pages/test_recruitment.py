@@ -1,14 +1,15 @@
 import time
-import pytest
+
 import allure
+import pytest
+from faker import Faker
 
 from conftest import logger
-from faker import Faker
+from Diplom.files import BIG_FILE, IMG_2, RES
+from Diplom.page_obj.login_page import LoginPage
 from Diplom.page_obj.recruitment_block.add_candidate_page import CandidateAddPage
 from Diplom.page_obj.recruitment_block.recruitment_page import RecruitmentPage
-from Diplom.page_obj.login_page import LoginPage
 from Diplom.urls import URLS
-from Diplom.files import  RES, BIG_FILE, IMG_2
 
 
 @pytest.fixture(scope="function")
@@ -19,6 +20,7 @@ def recruitment_page(driver):
 
     return RecruitmentPage(driver)
 
+
 @pytest.fixture()
 def add_candidates(driver):
     return CandidateAddPage(driver)
@@ -28,14 +30,12 @@ def add_candidates(driver):
 def fake():
     return Faker()
 
+
 # Блок статичных данных для тестов
 fakes = Faker()
 TEST_NAME = fakes.first_name()
 TEST_LAST = fakes.last_name()
 TEST_MAIL = fakes.email()
-
-
-
 
 
 @allure.epic("Страница Recruitment")
@@ -89,7 +89,6 @@ def test_add_button(add_candidates, recruitment_page, driver):
         assert current_url == URLS.RECRUITMENT_ADD
         logger.info("✓ Страница добавления кандидата открыта корректно")
 
-
     with allure.step("Нажать кнопку Cancel"):
         add_candidates.CANCEL_BUTTON.click()
         logger.info("Кнопка Cancel нажата")
@@ -108,7 +107,6 @@ def test_add_button(add_candidates, recruitment_page, driver):
         logger.info("✓ Возврат на страницу Recruitment выполнен")
 
     logger.info("=== Конец test_add_button ===")
-
 
 
 @allure.epic("Страница Recruitment")
@@ -169,14 +167,18 @@ def test_add_candidate_workflow(add_candidates, recruitment_page, fake, driver):
         first_name = fake.first_name()
         middle_name = fake.first_name()
         last_name = fake.last_name()
-        phone = fake.numerify('(###) ###-####')
+        phone = fake.numerify("(###) ###-####")
         keywords = fake.words(nb=3)
         notes = fake.sentences(nb=4)
         date = fake.date(pattern="%Y-%d-%m")
-        logger.info(f"Данные: {first_name} {middle_name} {last_name}, {email}, {phone}, дата {date}")
+        logger.info(
+            f"Данные: {first_name} {middle_name} {last_name}, {email}, {phone}, дата {date}"
+        )
 
     with allure.step("Заполнить все поля кандидата (метод add_candidate)"):
-        add_candidates.add_candidate(email, first_name, middle_name, last_name, phone, keywords, notes, date)
+        add_candidates.add_candidate(
+            email, first_name, middle_name, last_name, phone, keywords, notes, date
+        )
         logger.info("Основные поля заполнены")
 
     with allure.step("Загрузить резюме"):
@@ -355,7 +357,9 @@ def test_input_file_errors(add_candidates, recruitment_page, driver):
     with allure.step("Загрузить файл с недопустимым расширением"):
         add_candidates.RESUME.send_keys(str(IMG_2))
         logger.info(f"Файл {IMG_2} выбран")
-        is_error_visible = add_candidates.check_that_error_is_visible("File type not allowed")
+        is_error_visible = add_candidates.check_that_error_is_visible(
+            "File type not allowed"
+        )
         assert is_error_visible
         logger.info("✓ Ошибка 'File type not allowed' отобразилась")
 
@@ -370,7 +374,9 @@ def test_input_file_errors(add_candidates, recruitment_page, driver):
     with allure.step("Загрузить файл с превышением допустимого размера"):
         add_candidates.RESUME.send_keys(str(BIG_FILE))
         logger.info(f"Файл {BIG_FILE} выбран")
-        is_big_error_visible = add_candidates.check_that_error_is_visible("Attachment Size Exceeded")
+        is_big_error_visible = add_candidates.check_that_error_is_visible(
+            "Attachment Size Exceeded"
+        )
         assert is_big_error_visible
         logger.info("✓ Ошибка 'Attachment Size Exceeded' отобразилась")
 
@@ -394,8 +400,12 @@ def test_input_file_errors(add_candidates, recruitment_page, driver):
         ("error", "2026-04-02", "valid date in yyyy-dd-mm format"),
     ],
 )
-def test_search_input_date_errors(recruitment_page, driver, from_date, to_date, expected):
-    logger.info(f"=== Начало test_search_input_date_errors с параметрами {from_date}, {to_date}, {expected} ===")
+def test_search_input_date_errors(
+    recruitment_page, driver, from_date, to_date, expected
+):
+    logger.info(
+        f"=== Начало test_search_input_date_errors с параметрами {from_date}, {to_date}, {expected} ==="
+    )
     with allure.step("Открыть страницу Recruitment"):
         recruitment_page.MENU_RECRUITMENT.click()
         logger.info("Меню Recruitment нажато")
@@ -445,14 +455,20 @@ def test_search_input_date_errors(recruitment_page, driver, from_date, to_date, 
         (TEST_NAME, TEST_LAST, "error", "Expected format: admin@example.com"),
     ],
 )
-def test_input_field_error(add_candidates, recruitment_page, driver, first_name, last_name, email, expected):
-    logger.info(f"=== Начало test_input_field_error с {first_name}, {last_name}, {email}, {expected} ===")
+def test_input_field_error(
+    add_candidates, recruitment_page, driver, first_name, last_name, email, expected
+):
+    logger.info(
+        f"=== Начало test_input_field_error с {first_name}, {last_name}, {email}, {expected} ==="
+    )
     with allure.step("Открыть страницу добавления кандидата"):
         recruitment_page.MENU_RECRUITMENT.click()
         recruitment_page.ADD_BUTTON.click()
         logger.info("Форма добавления открыта")
 
-    with allure.step(f"Заполнить поля: first='{first_name}', last='{last_name}', email='{email}'"):
+    with allure.step(
+        f"Заполнить поля: first='{first_name}', last='{last_name}', email='{email}'"
+    ):
         add_candidates.FIRST_NAME.fill(first_name)
         add_candidates.LAST_NAME.fill(last_name)
         add_candidates.EMAIL.fill(email)
@@ -491,7 +507,9 @@ def test_number_input_error(add_candidates, recruitment_page, driver):
         logger.info("Поле Contact Number заполнено")
 
     with allure.step("Проверить ошибку 'Allows numbers and only +'"):
-        is_error_visible = add_candidates.check_that_error_is_visible("Allows numbers and only +")
+        is_error_visible = add_candidates.check_that_error_is_visible(
+            "Allows numbers and only +"
+        )
         assert is_error_visible
         logger.info("✓ Ошибка  отобразилась")
         allure.attach(
